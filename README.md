@@ -1,4 +1,4 @@
 <div align="center">
-#Tetris-KAMIKAZE
+Tetris-KAMIKAZE
 </div>
 Trabajo Práctico/Tópicos de Programación/Kamikaze
