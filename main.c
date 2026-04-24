@@ -1,36 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "GBT/gbt.h"
-
-//CONSTANTES
-#define TITULO "Primera Prueba"
-#define ANCHO 25
-#define ALTO 25
-#define ESCALA 15
+#include "menu.h"
 
 
-//ERRORES
-#define INIT_ERROR -1
-#define COLOR_ERROR -2
-#define WINDOW_ERROR -3
 
-int main()
+
+
+tGBT_ColorRGB paleta[] = {
+    {0x00,0x00,0x00}, // 0 -> NEGRO
+    {0xFF,0x00,0x00}, // 1 -> ROJO
+    {0x00,0xFF,0x00}, // 2 -> VERDE
+    {0x00,0x00,0xFF}, // 3 -> AZUL
+    {0xFF,0xFF,0xFF}, // 4 -> BLANCO
+    {0x01,0x01,0x01}  // 5 -> TRANSPARENTE
+
+};
+
+
+int main(int argc, char* argv[])
 {
-    if(gbt_iniciar() != 0){
-        printf("%s",gbt_obtener_log());
-        return INIT_ERROR;
-    }
-    //CREAMOS LA VENTANA
-    if(gbt_crear_ventana(TITULO,ANCHO,ALTO,ESCALA) != 0){
-        printf("%s",gbt_obtener_log());
-        return WINDOW_ERROR;
-    }
-
-    if(gbt_aplicar_paleta(NULL,PALETA_MAX_COLORES,GBT_FORMATO_888)!=0){
-        printf("%s",gbt_obtener_log());
-        return COLOR_ERROR;
-    }
-
+    if(IniciarMenu()!=0)
+        return -1;
     uint8_t corriendo = 1;
     eGBT_Tecla tecla; // Estructura tecla que detecta las teclas presionadas
     while(corriendo)
@@ -39,7 +30,6 @@ int main()
         tecla = gbt_obtener_tecla_presionada(); // Carga en la estructura tecla la tecla presionada
         if(tecla == GBTK_ESCAPE)
             corriendo = 0;
-
 
 
     }
