@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "GBT/gbt.h"
-#include "menu.h"
+#include "core.h"
 
 
+/*
+Dibuja una Tile (celda)
+*/
 void DrawTile(uint16_t X_OR, uint16_t Y_OR, uint8_t COLOR_INDEX)
 {
 

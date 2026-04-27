@@ -5,7 +5,7 @@
 #include "pixdraw.h"
 
 
-uint8_t IniciarMenu()
+int8_t MenuIniciar()
 {
     uint8_t Example[15][15] =
     {

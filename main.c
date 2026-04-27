@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "GBT/gbt.h"
 #include "menu.h"
-
+#include "tdatablero.h"
 
 
 
@@ -20,8 +20,11 @@ tGBT_ColorRGB paleta[] = {
 
 int main(int argc, char* argv[])
 {
-    if(IniciarMenu()!=0)
-        return -1;
+    Stablero tablero;
+    if(MenuIniciar()!=0)
+        return INIT_ERROR;
+    if(StableroIniciar(&tablero)==INIT_ERROR)
+        return INIT_ERROR;
     uint8_t corriendo = 1;
     eGBT_Tecla tecla; // Estructura tecla que detecta las teclas presionadas
     while(corriendo)
