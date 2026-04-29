@@ -66,7 +66,8 @@ void StableroMostrar(Stablero* tablero)
 
 
 /*
-
+En base a una fila y un tablero
+devuelve si la fila está llena
 */
 int8_t StableroFilaLlena(Stablero* tablero, uint8_t fil)
 {
@@ -78,8 +79,8 @@ int8_t StableroFilaLlena(Stablero* tablero, uint8_t fil)
     uint8_t i;
     for(i=0;i<COL_TABLERO;i++)
         if(tablero->tab[fil][i] == 0)
-            return false;
-    return true;
+            return FALSE;
+    return TRUE;
 }
 
 int8_t StableroReiniciarFil(Stablero* tablero, uint8_t fil)
@@ -89,6 +90,22 @@ int8_t StableroReiniciarFil(Stablero* tablero, uint8_t fil)
     uint8_t i;
     for(i=0;i<(FIL_TABLERO-1);i++)
         tablero->tab[fil][i]=0;
+    return OK;
+}
+
+int8_t StableroDesplazarFil(Stablero* tablero, uint8_t fil)
+{
+    uint8_t i;
+
+    uint16_t* aux = tablero->tab[fil];
+
+    for(i=fil;i>0;i--)
+    {
+        tablero->tab[i] = tablero->tab[i-1];
+    }
+
+    tablero->tab[0] = aux;
+
     return OK;
 }
 
