@@ -13,11 +13,11 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="C:/Users/queve/OneDrive/Documentos/CodeBlocks/Tetris-KAMIKAZE/lib/GBT_v2026.1C.01/include" />
+					<Add directory="lib/GBT_v2026.1C.01/include" />
 				</Compiler>
 				<Linker>
 					<Add option="-lgbt" />
-					<Add directory="C:/Users/queve/OneDrive/Documentos/CodeBlocks/Tetris-KAMIKAZE/lib/GBT_v2026.1C.01/lib" />
+					<Add directory="lib/GBT_v2026.1C.01/bin" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -37,6 +37,10 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="core.h" />
+		<Unit filename="funciones.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="funciones.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
