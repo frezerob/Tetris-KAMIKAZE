@@ -7,7 +7,7 @@ Apellido: Quevedo, Lautaro Joaquin
 DNI: 47024422
 Usuario: LautaroJQ
 Entrega: No
-Apellido: Conte, Dante Javier
+Apellido: Conti, Dante Javier
 DNI: 44510761
 Usuario: dantejaconti
 Entrega: No
