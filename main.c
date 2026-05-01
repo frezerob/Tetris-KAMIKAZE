@@ -1,3 +1,17 @@
+/*
+Apellido: Freccero, Alejo Benjamin
+DNI: 47263450
+Usuario: frezerob
+Entrega: No
+Apellido: Quevedo, Lautaro Joaquin
+DNI: 47024422
+Usuario: LautaroJQ
+Entrega: No
+Apellido: Conte, Dante Javier
+DNI: 44510761
+Usuario: dantejaconti
+Entrega: No
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include "GBT/gbt.h"
