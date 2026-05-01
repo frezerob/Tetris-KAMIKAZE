@@ -25,6 +25,18 @@ int main(int argc, char* argv[])
         return INIT_ERROR;
     if(StableroIniciar(&tablero)==INIT_ERROR)
         return INIT_ERROR;
+    tablero.tab[0][1]=24;
+    tablero.tab[4][5]= 1;
+
+    StableroMostrar(&tablero);
+    printf("\n");
+    printf("\n");
+    StableroDesplazarFil(&tablero,4);
+    printf("\n");
+    printf("\n");
+    StableroMostrar(&tablero);
+
+
     uint8_t corriendo = 1;
     eGBT_Tecla tecla; // Estructura tecla que detecta las teclas presionadas
     while(corriendo)
