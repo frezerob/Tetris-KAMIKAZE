@@ -1,5 +1,13 @@
 #ifndef CORE_H_INCLUDED
 #define CORE_H_INCLUDED
+//LIBRERIAS
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
+#include "GBT/gbt.h"
+
 
 //MACROS
 #define TITULO "Primera Prueba"

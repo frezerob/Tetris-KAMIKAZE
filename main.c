@@ -17,6 +17,7 @@ Entrega: No
 #include "GBT/gbt.h"
 #include "menu.h"
 #include "tdatablero.h"
+#include "funciones.h"
 
 
 
@@ -34,6 +35,7 @@ tGBT_ColorRGB paleta[] = {
 
 int main(int argc, char* argv[])
 {
+    semilla();
     Stablero tablero;
     if(MenuIniciar()!=0)
         return INIT_ERROR;
