@@ -41,6 +41,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="funciones.h" />
+		<Unit filename="graficos.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graficos.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -48,10 +52,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="menu.h" />
-		<Unit filename="pixdraw.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="pixdraw.h" />
 		<Unit filename="tablero.c">
 			<Option compilerVar="CC" />
 		</Unit>

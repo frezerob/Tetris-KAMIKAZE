@@ -1,9 +1,9 @@
-#include "tdatablero.h"
-#include "core.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "GBT/gbt.h"
-void MatrizMostrar(matrix* m)
+#include <stdint.h>
+#include "matriz.h"
+
+void MatrizMostrar(matriz* m)
 {
     for(uint8_t i=0; i<m->fil; i++)
     {
@@ -20,7 +20,7 @@ void MatrizMostrar(matrix* m)
  * Inicializa la matriz
  * Devuelve 0 Si OK y -1 Si hay error
  */
-uint8_t MatrizIniciar(matrix* m, int fil, int col)
+int8_t MatrizIniciar(matriz* m, uint8_t fil, uint8_t col)
 {   m->mat = malloc (fil * sizeof(void*));
     if(m->mat==NULL)
         return INIT_ERR;
@@ -44,12 +44,12 @@ uint8_t MatrizIniciar(matrix* m, int fil, int col)
  * Dada una matriz m devuelva la primera fila llena que encuentre
  * Si no encuentra nada devuelve -1
  */
-uint8_t MatrizFilCompleta(matrix* m)
+int8_t MatrizFilaLlena(matriz* m)
 {
-    uint8_t flag;
-    for(uint8_t i=0; i< m->fil ; i++){
+    int flag;
+    for(int i=0; i< m->fil ; i++){
         flag=0;
-        for(uint8_t j=0 ; j< m->col ; j++){
+        for(int j=0 ; j< m->col ; j++){
             if(m->mat[i][j] == 0)
                 flag=1;
         }
@@ -63,7 +63,7 @@ uint8_t MatrizFilCompleta(matrix* m)
 /*
  * Reinicia a 0 una fila de la matriz pasada como parametro
  */
-void MatrizVaciarFil(matrix *m, uint8_t row)
+void MatrizVaciarFil(matriz *m, uint8_t row)
 {
     for(uint8_t j=0; j<m->col;j++)
     {
@@ -76,28 +76,13 @@ void MatrizVaciarFil(matrix *m, uint8_t row)
  * Dada una matriz m y una fila row
  * Desplaza la matris hacia abajo y la fila row pasa a ser la primera.
  */
-void MatrizDespFil(matrix* m, uint8_t row)
+void MatrizDespFil(matriz* m, uint8_t row)
 {
-    uint8_t* aux = m->mat[row];
+    int* aux = m->mat[row];
     for(uint8_t i = row ; i>0 ; i--)
     {
         m->mat[i] = m->mat[i-1];
     }
 
     m->mat[0] = aux;
-}
-
-void PiezaVolcar(matrix* m)
-{
-    uint16_t PosX=OFFSET;
-    uint16_t PosY=OFFSET;
-    uint8_t color;
-    for(uint8_t i=0; i<FIL_TABLERO; i++){
-        for(uint8_t j=0; j<COL_TABLERO; j++){
-            color = gbt_obtener_color_pixel(PosX + j,PosY+i);
-            printf("%d",color);
-            m->mat[i][j] = color;
-        }
-        printf("\n");
-    }
 }
