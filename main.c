@@ -30,84 +30,87 @@ int main(int argc, char* argv[])
     matrix m;
     PiezaActiva p;
 
-    if(MenuIniciar()!=0)
+    if(MenuIniciar() != 0)
         return INIT_ERR;
-    if(MatrizIniciar(&m,FIL_TABLERO,COL_TABLERO)==INIT_ERR)
+    if(MatrizIniciar(&m, FIL_TABLERO, COL_TABLERO) == INIT_ERR)
         return INIT_ERR;
 
-    tipoPieza(&p,generarPiezaAleatoria());
+    tipoPieza(&p, generarPiezaAleatoria());
 
-    //DibujarTablero(&m,0,0);
-    //DibujarPieza(&p);
-
-
-    //Inicia temporizador de 0 segundo
-    tGBT_Temporizador* temporizador = gbt_temporizador_crear(1.0);
+    tGBT_Temporizador* temporizador = gbt_temporizador_crear(0.2);
     if(!temporizador){
-        printf("%s",gbt_obtener_log());
+        printf("%s", gbt_obtener_log());
         return TEMPO_ERR;
     }
 
     uint8_t X_origen = 0;
     uint8_t Y_origen = 0;
-
     uint8_t corriendo = 1;
-    eGBT_Tecla tecla; // Estructura tecla que detecta las teclas presionadas
+    uint8_t fijada = 0;
+    eGBT_Tecla tecla;
+
     while(corriendo)
     {
+        fijada = 0;
+        gbt_procesar_entrada();
+        tecla = gbt_obtener_tecla_presionada();
 
-        //Borramos el buffer
-        gbt_borrar_backbuffer(BRD);
-        DibujarTablero(&m,X_origen,Y_origen);
-
-
-        //PROCESADO DE TECLAS
-        gbt_procesar_entrada(); // Actualiza el estado de las teclas
-        tecla = gbt_obtener_tecla_presionada(); // Carga en la estructura tecla la tecla presionada
         if(tecla == GBTK_ESCAPE)
             corriendo = 0;
 
-        //MOVIMIENTOS Y ROTACIONES
-        if((tecla == GBTK_ESPACIO) ){
-            printf("1");
-        }
-        if(tecla == GBTK_a)
-            PiezaMoverIzq(&p);
-        if(tecla == GBTK_d)
-            PiezaMoverDer(&p);
-        if(tecla == GBTK_s){
-            PiezaMoverAbajo(&p);
-            if(PiezaDetectarColision(&p)){
-                PiezaMoverArriba(&p);
-                DibujarPieza(&p);
-                PiezaVolcar(&m);
-                tipoPieza(&p,generarPiezaAleatoria());
-            }
-        }
-
-
-        //MOVIMIENTOS POR TIEMPO
+        // GRAVEDAD POR TIEMPO — va primero
         if(gbt_temporizador_consumir(temporizador)){
             PiezaMoverAbajo(&p);
-            if(PiezaDetectarColision(&p)){
+            if(PiezaDetectarColision(&p, &m)){
                 PiezaMoverArriba(&p);
-                DibujarPieza(&p);
-                PiezaVolcar(&m);
-                tipoPieza(&p,generarPiezaAleatoria());
+                PiezaVolcar(&m, &p);
+                int fila;
+                while((fila = MatrizFilCompleta(&m)) != -1)
+                    MatrizEliminarFila(&m, fila);
+                tipoPieza(&p, generarPiezaAleatoria());
+                fijada = 1;
             }
         }
 
+        // TECLAS — solo si la pieza no se fijó este frame
+        if(!fijada){
+            if(tecla == GBTK_a){
+                PiezaMoverIzq(&p);
+                if(PiezaDetectarColision(&p, &m))
+                    PiezaMoverDer(&p);
+            }
+            if(tecla == GBTK_d){
+                PiezaMoverDer(&p);
+                if(PiezaDetectarColision(&p, &m))
+                    PiezaMoverIzq(&p);
+            }
+            if(tecla == GBTK_w){
+                PiezaRotarDerecha(&p);
+                if(PiezaDetectarColision(&p, &m))
+                    PiezaRotarIzquierda(&p);
+            }
+            if(tecla == GBTK_s){
+                PiezaMoverAbajo(&p);
+                if(PiezaDetectarColision(&p, &m)){
+                    PiezaMoverArriba(&p);
+                    PiezaVolcar(&m, &p);
+                    int fila;
+                    while((fila = MatrizFilCompleta(&m)) != -1)
+                        MatrizEliminarFila(&m, fila);
+                    tipoPieza(&p, generarPiezaAleatoria());
+                }
+            }
+        }
 
-
-        //DIBUJADO Y VOLCADO
-
+        // DIBUJADO
+        gbt_borrar_backbuffer(BRD);
+        DibujarTablero(&m, X_origen, Y_origen);
         DibujarPieza(&p);
         gbt_volcar_backbuffer();
-
     }
 
+    gbt_temporizador_destruir(temporizador);
     gbt_destruir_ventana();
-
 
     return 0;
 }

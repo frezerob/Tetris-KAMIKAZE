@@ -87,8 +87,8 @@ int8_t PiezaPuedeRotar(PiezaActiva* p)
         }
     }
 }
-
 */
+
 void PiezaMoverArriba(PiezaActiva* p)
 {
     p->posY--;
@@ -101,26 +101,39 @@ void PiezaMoverAbajo(PiezaActiva* p)
 
 void PiezaMoverIzq(PiezaActiva* p)
 {
-    if(p->posX>1)
         p->posX--;
 }
 void PiezaMoverDer(PiezaActiva* p)
 {
-    if(p->posX<10)
         p->posX++;
 }
 
-int8_t PiezaDetectarColision(PiezaActiva* p)
+void PiezaRotarDerecha(PiezaActiva* p)
 {
-    for(uint8_t i=0; i<ORDEN;i++){
-        for(uint8_t j=0; j<ORDEN; j++){
-            if (p->forma[p->rotacion][i*4+j]!=TR && gbt_obtener_color_pixel(p->posX + j,p->posY + i) != N){
-                printf("1");
-                return 1;
-            }
+    p->rotacion = (p->rotacion + 1) % 4;
+}
 
+
+// funciones.c
+
+int8_t PiezaDetectarColision(PiezaActiva* p, matrix* m)
+{
+    for(uint8_t i = 0; i < ORDEN; i++){
+        for(uint8_t j = 0; j < ORDEN; j++){
+            if(p->forma[p->rotacion][i*4+j] == TR) continue;
+
+            int fila = p->posY + i;
+            int col  = p->posX + j;
+
+            if(fila >= FIL_TABLERO) return 1;          // piso
+            if(col < 0 || col >= COL_TABLERO) return 1; // bordes
+            if(fila >= 0 && m->mat[fila][col] != N) return 1; // celda ocupada
         }
     }
     return 0;
 }
 
+void PiezaRotarIzquierda(PiezaActiva* p)
+{
+    p->rotacion = (p->rotacion + 3) % 4;
+}

@@ -2,14 +2,11 @@
 #define FUNCIONES_H_INCLUDED
 
 #include "core.h"
+#include "tdatablero.h"
 
 
-typedef struct {
-    int (*forma)[16];
-    int rotacion;
-    int posX;
-    int posY;
-} PiezaActiva;
+
+
 
 // Prototipos de funciones
 void semilla();
@@ -20,5 +17,7 @@ void PiezaMoverAbajo(PiezaActiva* p);
 void PiezaMoverIzq(PiezaActiva* p);
 void PiezaMoverDer(PiezaActiva* p);
 void PiezaMoverArriba(PiezaActiva* p);
-int8_t PiezaDetectarColision(PiezaActiva* p);
+void PiezaRotarDerecha(PiezaActiva* p);
+int8_t PiezaDetectarColision(PiezaActiva* p, matrix* m);
+void PiezaRotarIzquierda(PiezaActiva* p);
 #endif // FUNCIONES_H_INCLUDED
