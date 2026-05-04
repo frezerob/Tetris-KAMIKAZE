@@ -1,5 +1,6 @@
 #include "tdatablero.h"
 #include "core.h"
+#include "funciones.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "GBT/gbt.h"
@@ -40,25 +41,7 @@ uint8_t MatrizIniciar(matrix* m, int fil, int col)
     return OK;
 }
 
-/*
- * Dada una matriz m devuelva la primera fila llena que encuentre
- * Si no encuentra nada devuelve -1
- */
-uint8_t MatrizFilCompleta(matrix* m)
-{
-    uint8_t flag;
-    for(uint8_t i=0; i< m->fil ; i++){
-        flag=0;
-        for(uint8_t j=0 ; j< m->col ; j++){
-            if(m->mat[i][j] == 0)
-                flag=1;
-        }
-        if(!flag)
-            return i;
-    }
 
-    return -1;
-}
 
 /*
  * Reinicia a 0 una fila de la matriz pasada como parametro
@@ -87,17 +70,58 @@ void MatrizDespFil(matrix* m, uint8_t row)
     m->mat[0] = aux;
 }
 
-void PiezaVolcar(matrix* m)
+void PiezaVolcar(matrix* m, PiezaActiva* p)
 {
-    uint16_t PosX=OFFSET;
-    uint16_t PosY=OFFSET;
-    uint8_t color;
-    for(uint8_t i=0; i<FIL_TABLERO; i++){
-        for(uint8_t j=0; j<COL_TABLERO; j++){
-            color = gbt_obtener_color_pixel(PosX + j,PosY+i);
-            printf("%d",color);
-            m->mat[i][j] = color;
+    for(uint8_t i = 0; i < ORDEN; i++){
+        for(uint8_t j = 0; j < ORDEN; j++){
+            int color = p->forma[p->rotacion][i*4+j];
+            if(color == TR)
+                continue;
+
+            int fila = p->posY + i;
+            int col  = p->posX + j;
+
+            if(fila >= 0 && fila < FIL_TABLERO &&
+               col  >= 0 && col  < COL_TABLERO)
+            {
+                m->mat[fila][col] = color;
+            }
         }
-        printf("\n");
     }
+}
+
+
+/*
+ * Devuelve el índice de la primera fila completa, o -1 si no hay ninguna.
+ */
+int MatrizFilCompleta(matrix* m)
+{
+    for(int i = m->fil - 1; i >= 0; i--){   // de abajo hacia arriba
+        int llena = 1;
+        for(int j = 0; j < m->col; j++){
+            if(m->mat[i][j] == N){
+                llena = 0;
+                break;
+            }
+        }
+        if(llena) return i;
+    }
+    return -1;
+}
+
+/*
+
+ */
+void MatrizEliminarFila(matrix* m, int row)
+{
+    // Vaciamos la fila antes de reubicarla
+    for(int j = 0; j < m->col; j++)
+        m->mat[row][j] = N;
+    // Guardamos el puntero de la fila eliminada
+    uint8_t* aux = m->mat[row];
+    // Subimos todos los punteros por encima de row una posición
+    for(int i = row; i > 0; i--)
+        m->mat[i] = m->mat[i-1];
+    // La fila vacía queda en la posición 0 (arriba)
+    m->mat[0] = aux;
 }

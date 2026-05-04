@@ -8,6 +8,13 @@
 #include <time.h>
 #include "GBT/gbt.h"
 
+typedef struct {
+    int (*forma)[16];
+    int rotacion;
+    int posX;
+    int posY;
+} PiezaActiva;
+
 typedef enum {
     N,   // Negro
     I,   // Cian

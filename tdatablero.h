@@ -12,10 +12,11 @@ typedef struct{
 
 uint8_t MatrizIniciar(matrix* m, int fil, int col);
 void MatrizMostrar(matrix* m);
-uint8_t MatrizFilCompleta(matrix* m);
 void MatrizVaciarFil(matrix *m, uint8_t row);
 void MatrizDespFil(matrix* m, uint8_t row);
+int MatrizFilCompleta(matrix* m);
+void MatrizEliminarFila(matrix* m, int row);
 
 
-void PiezaVolcar(matrix* m);
+void PiezaVolcar(matrix* m, PiezaActiva* p);
 #endif // TDATABLERO_H_INCLUDED
