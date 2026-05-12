@@ -9,7 +9,7 @@
 #include "GBT/gbt.h"
 
 typedef struct {
-    int (*forma)[16];
+    uint8_t (*forma)[16];
     int rotacion;
     int posX;
     int posY;
@@ -33,14 +33,14 @@ typedef enum {
 
 //MACROS
 #define TITULO "Primera Prueba"
-#define ANCHO 14
-#define ALTO 29
+#define ANCHO 12
+#define ALTO 27
 #define ESCALA 25
 #define TILE_SIZE 10 // Tamaño de la tile
 
 //MACROS TABLERO
-#define FIL_TABLERO 27
-#define COL_TABLERO 12
+#define FIL_TABLERO 25
+#define COL_TABLERO 10
 #define OFFSET 1
 //ESTADOS
 #define TRUE 1

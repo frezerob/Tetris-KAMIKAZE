@@ -20,10 +20,10 @@ void DibujarPieza(PiezaActiva* p)
 {
     for(uint8_t i = 0; i < ORDEN; i++){
         for(uint8_t j = 0; j < ORDEN; j++){
-            if(p->forma[p->rotacion][i*4+j] != TR)
+            if(p->forma[p->rotacion][i*ORDEN+j] != TR)
                 gbt_dibujar_pixel(p->posX + j + OFFSET,  // offset solo acá
                                   p->posY + i + OFFSET,
-                                  p->forma[p->rotacion][i*4+j]);
+                                  p->forma[p->rotacion][i*ORDEN+j]);
         }
     }
 }

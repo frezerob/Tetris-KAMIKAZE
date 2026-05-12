@@ -34,10 +34,9 @@ int main(int argc, char* argv[])
         return INIT_ERR;
     if(MatrizIniciar(&m, FIL_TABLERO, COL_TABLERO) == INIT_ERR)
         return INIT_ERR;
-
     tipoPieza(&p, generarPiezaAleatoria());
 
-    tGBT_Temporizador* temporizador = gbt_temporizador_crear(0.2);
+    tGBT_Temporizador* temporizador = gbt_temporizador_crear(0.02);
     if(!temporizador){
         printf("%s", gbt_obtener_log());
         return TEMPO_ERR;

@@ -1,6 +1,8 @@
 #include "funciones.h"
 #include "core.h"
 
+uint8_t PiezaAnterior;
+
 void semilla()
 {
     srand(time(NULL));
@@ -8,53 +10,61 @@ void semilla()
 /*
 * Genera una pieza al azar
 */
-int generarPiezaAleatoria() {
-    return (rand() % 7);
+uint8_t generarPiezaAleatoria() {
+    uint8_t Aux;
+    do{
+        Aux = (rand() % 7);
+    }
+    while(Aux == PiezaAnterior);
+    PiezaAnterior = Aux;
+    return PiezaAnterior;
 }
 
-int PIEZA_I[4][16] = {
+
+
+uint8_t PIEZA_I[4][16] = {
     {TR,TR,TR,TR, I,I,I,I, TR,TR,TR,TR, TR,TR,TR,TR},
     {TR,TR,I,TR, TR,TR,I,TR, TR,TR,I,TR, TR,TR,I,TR},
     {TR,TR,TR,TR, TR,TR,TR,TR, I,I,I,I, TR,TR,TR,TR},
     {TR,I,TR,TR, TR,I,TR,TR, TR,I,TR,TR, TR,I,TR,TR}
 };
 
-int PIEZA_J[4][16] = {
+uint8_t PIEZA_J[4][16] = {
     {J,TR,TR,TR, J,J,J,TR, TR,TR,TR,TR, TR,TR,TR,TR},
     {TR,J,J,TR, TR,J,TR,TR, TR,J,TR,TR, TR,TR,TR,TR},
     {TR,TR,TR,TR, J,J,J,TR, TR,TR,J,TR, TR,TR,TR,TR},
     {TR,J,TR,TR, TR,J,TR,TR, J,J,TR,TR, TR,TR,TR,TR}
 };
 
-int PIEZA_L[4][16] = {
+uint8_t PIEZA_L[4][16] = {
     {TR,TR,L,TR, L,L,L,TR, TR,TR,TR,TR, TR,TR,TR,TR},
     {TR,L,TR,TR, TR,L,TR,TR, TR,L,L,TR, TR,TR,TR,TR},
     {TR,TR,TR,TR, L,L,L,TR, L,TR,TR,TR, TR,TR,TR,TR},
     {L,L,TR,TR, TR,L,TR,TR, TR,L,TR,TR, TR,TR,TR,TR}
 };
 
-int PIEZA_O[4][16] = {
+uint8_t PIEZA_O[4][16] = {
     {TR,O,O,TR, TR,O,O,TR, TR,TR,TR,TR, TR,TR,TR,TR},
     {TR,O,O,TR, TR,O,O,TR, TR,TR,TR,TR, TR,TR,TR,TR},
     {TR,O,O,TR, TR,O,O,TR, TR,TR,TR,TR, TR,TR,TR,TR},
     {TR,O,O,TR, TR,O,O,TR, TR,TR,TR,TR, TR,TR,TR,TR}
 };
 
-int PIEZA_S[4][16] = {
+uint8_t PIEZA_S[4][16] = {
     {TR,S,S,TR, S,S,TR,TR, TR,TR,TR,TR, TR,TR,TR,TR},
     {TR,S,TR,TR, TR,S,S,TR, TR,TR,S,TR, TR,TR,TR,TR},
     {TR,TR,TR,TR, TR,S,S,TR, S,S,TR,TR, TR,TR,TR,TR},
     {S,TR,TR,TR, S,S,TR,TR, TR,S,TR,TR, TR,TR,TR,TR}
 };
 
-int PIEZA_T[4][16] = {
+uint8_t PIEZA_T[4][16] = {
     {TR,T,TR,TR, T,T,T,TR, TR,TR,TR,TR, TR,TR,TR,TR},
     {TR,T,TR,TR, TR,T,T,TR, TR,T,TR,TR, TR,TR,TR,TR},
     {TR,TR,TR,TR, T,T,T,TR, TR,T,TR,TR, TR,TR,TR,TR},
     {TR,T,TR,TR, T,T,TR,TR, TR,T,TR,TR, TR,TR,TR,TR}
 };
 
-int PIEZA_Z[4][16] = {
+uint8_t PIEZA_Z[4][16] = {
     {Z,Z,TR,TR, TR,Z,Z,TR, TR,TR,TR,TR, TR,TR,TR,TR},
     {TR,TR,Z,TR, TR,Z,Z,TR, TR,Z,TR,TR, TR,TR,TR,TR},
     {TR,TR,TR,TR, Z,Z,TR,TR, TR,Z,Z,TR, TR,TR,TR,TR},
@@ -63,17 +73,17 @@ int PIEZA_Z[4][16] = {
 
 
 
-int (*FORMAS[7])[16] = {
+uint8_t (*FORMAS[7])[16] = {
     PIEZA_I, PIEZA_J, PIEZA_L, PIEZA_O, PIEZA_S, PIEZA_T, PIEZA_Z
 };
 
 
-void tipoPieza(PiezaActiva* pieza, int tipoSeleccionado) {
+void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado) {
 
     pieza->forma = FORMAS[tipoSeleccionado];
     // Valores iniciales
     pieza->rotacion = 0;
-    pieza->posX = 5;
+    pieza->posX = COL_TABLERO/2 - OFFSET;
 
     pieza->posY = 0;
 }
@@ -101,11 +111,11 @@ void PiezaMoverAbajo(PiezaActiva* p)
 
 void PiezaMoverIzq(PiezaActiva* p)
 {
-        p->posX--;
+    p->posX--;
 }
 void PiezaMoverDer(PiezaActiva* p)
 {
-        p->posX++;
+    p->posX++;
 }
 
 void PiezaRotarDerecha(PiezaActiva* p)

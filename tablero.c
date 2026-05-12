@@ -74,7 +74,7 @@ void PiezaVolcar(matrix* m, PiezaActiva* p)
 {
     for(uint8_t i = 0; i < ORDEN; i++){
         for(uint8_t j = 0; j < ORDEN; j++){
-            int color = p->forma[p->rotacion][i*4+j];
+            int color = p->forma[p->rotacion][i*ORDEN+j];
             if(color == TR)
                 continue;
 
@@ -94,11 +94,12 @@ void PiezaVolcar(matrix* m, PiezaActiva* p)
 /*
  * Devuelve el índice de la primera fila completa, o -1 si no hay ninguna.
  */
-int MatrizFilCompleta(matrix* m)
+int8_t MatrizFilCompleta(matrix* m)
 {
-    for(int i = m->fil - 1; i >= 0; i--){   // de abajo hacia arriba
-        int llena = 1;
-        for(int j = 0; j < m->col; j++){
+    int8_t llena = 1;
+    for(int8_t i = m->fil - 1; i >= 0; i--){
+            llena = 1; // de abajo hacia arriba
+        for(int8_t j = 0; j < m->col; j++){
             if(m->mat[i][j] == N){
                 llena = 0;
                 break;
@@ -110,6 +111,19 @@ int MatrizFilCompleta(matrix* m)
 }
 
 /*
+void MatrizEliminarFila(matrix* m, int row)
+{
+    // Vaciamos la fila antes de reubicarla
+    for(int j = m->col/2; j < m->col; j++){
+        m->mat[row][j] = N;
+        m->mat[row][j%(m->col-1)] = N;
+        gbt_volcar_backbuffer();
+        gbt_esperar(1000);
+    }
+
+    // Guardamos el puntero de la fila eliminada
+    MatrizDespFil(m,row);
+}
 
  */
 void MatrizEliminarFila(matrix* m, int row)
@@ -118,10 +132,5 @@ void MatrizEliminarFila(matrix* m, int row)
     for(int j = 0; j < m->col; j++)
         m->mat[row][j] = N;
     // Guardamos el puntero de la fila eliminada
-    uint8_t* aux = m->mat[row];
-    // Subimos todos los punteros por encima de row una posición
-    for(int i = row; i > 0; i--)
-        m->mat[i] = m->mat[i-1];
-    // La fila vacía queda en la posición 0 (arriba)
-    m->mat[0] = aux;
+    MatrizFilCompleta(m);
 }

@@ -10,8 +10,8 @@
 
 // Prototipos de funciones
 void semilla();
-int generarPiezaAleatoria();
-void tipoPieza(PiezaActiva* pieza, int tipoSeleccionado);
+uint8_t generarPiezaAleatoria();
+void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado);
 int8_t PiezaPuedeRotar(PiezaActiva* p);
 void PiezaMoverAbajo(PiezaActiva* p);
 void PiezaMoverIzq(PiezaActiva* p);
