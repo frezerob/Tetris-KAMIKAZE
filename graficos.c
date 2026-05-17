@@ -65,3 +65,17 @@ void DibujarCaracter(char c, uint16_t X, uint16_t Y, uint8_t color)
 
 
 }
+
+void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color)
+{
+    while(*texto)
+    {
+
+        DibujarCaracter(*texto,X,Y,color);
+
+        X += TAM_FUENTE8X8 * config.ESCALA_FUENTE + 1;
+
+        texto++;
+
+    }
+}

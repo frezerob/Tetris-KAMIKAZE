@@ -39,13 +39,13 @@ int main(int argc, char* argv[])
     {
         config.ESCALA = 3;
         config.TAM_CELDA = 8;
-        config.ESCALA_FUENTE = 3;
+        config.ESCALA_FUENTE = 1;
     }
     else if (config.ANCHO == 640 && config.ALTO == 480)
     {
         config.ESCALA = 1;
         config.TAM_CELDA = 20;
-        config.ESCALA_FUENTE = 6;
+        config.ESCALA_FUENTE = 3;
     }
     else
         return INIT_ERR;
@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
         gbt_borrar_backbuffer(BRD);
         DibujarTablero(&m, X_origen, Y_origen);
         DibujarPieza(&p);
-        DibujarCaracter('A',0,0,4);
+        DibujarTexto("TETRIS",400,0,4);
         gbt_volcar_backbuffer();
     }
 
