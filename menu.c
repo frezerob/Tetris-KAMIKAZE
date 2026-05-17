@@ -2,9 +2,8 @@
 #include "menu.h"
 
 
-int8_t MenuIniciar()
+int8_t MenuIniciar(TDAconfig config)
 {
-
     tGBT_ColorRGB paleta[] = {
         {0x00, 0x00, 0x00}, // N   -> NEGRO
         {0x00, 0xFF, 0xFF}, // I   -> CIAN
@@ -23,7 +22,7 @@ int8_t MenuIniciar()
         return INIT_ERR;
     }
     //CREAMOS LA VENTANA
-    if(gbt_crear_ventana(TITULO,ANCHO,ALTO,ESCALA) != 0){
+    if(gbt_crear_ventana(TITULO,config.ANCHO,config.ALTO,config.ESCALA) != 0){
         printf("%s",gbt_obtener_log());
         return WINDOW_ERR;
     }
