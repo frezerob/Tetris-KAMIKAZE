@@ -83,9 +83,9 @@ void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado) {
     pieza->forma = FORMAS[tipoSeleccionado];
     // Valores iniciales
     pieza->rotacion = 0;
-    pieza->posX = COL_TABLERO/2 - OFFSET;
+    pieza->posX = COL_TABLERO/2;
 
-    pieza->posY = 0;
+    pieza->posY = -1;
 }
 /*
 int8_t PiezaPuedeRotar(PiezaActiva* p)

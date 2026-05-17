@@ -39,14 +39,19 @@ int main(int argc, char* argv[])
     {
         config.ESCALA = 3;
         config.TAM_CELDA = 8;
+        config.ESCALA_FUENTE = 3;
     }
     else if (config.ANCHO == 640 && config.ALTO == 480)
     {
         config.ESCALA = 1;
         config.TAM_CELDA = 20;
+        config.ESCALA_FUENTE = 6;
     }
     else
         return INIT_ERR;
+    config.OFFSET_X = (config.ANCHO - (COL_TABLERO * config.TAM_CELDA)) / 8;
+    config.OFFSET_Y = (config.ALTO - (FIL_TABLERO * config.TAM_CELDA)) / 2;
+
 
     semilla();
     matrix m;
@@ -72,12 +77,13 @@ int main(int argc, char* argv[])
 
     while(corriendo)
     {
+
         fijada = 0;
         gbt_procesar_entrada();
         tecla = gbt_obtener_tecla_presionada();
 
         if(tecla == GBTK_ESCAPE)
-            corriendo = 0;
+            return FIN;
 
         // GRAVEDAD POR TIEMPO — va primero
         if(gbt_temporizador_consumir(temporizador)){
@@ -127,6 +133,7 @@ int main(int argc, char* argv[])
         gbt_borrar_backbuffer(BRD);
         DibujarTablero(&m, X_origen, Y_origen);
         DibujarPieza(&p);
+        DibujarCaracter('A',0,0,4);
         gbt_volcar_backbuffer();
     }
 

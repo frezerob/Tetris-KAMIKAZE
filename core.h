@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include "GBT/gbt.h"
+#include "fuente8x8.h"
 #include "config.h"
 
 typedef struct {
@@ -36,9 +37,10 @@ typedef enum {
 #define TITULO "Primera Prueba"
 
 //MACROS TABLERO
-#define FIL_TABLERO 25
+#define FIL_TABLERO 20
 #define COL_TABLERO 10
-#define OFFSET 1
+#define TAM_FUENTE8X8 8
+
 //ESTADOS
 #define TRUE 1
 #define FALSE 0
@@ -48,4 +50,5 @@ typedef enum {
 #define WINDOW_ERR -3
 #define RANGE_ERR -4
 #define TEMPO_ERR -5
+#define FIN 0
 #endif // CORE_H_INCLUDED
