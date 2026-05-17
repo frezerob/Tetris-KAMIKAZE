@@ -133,3 +133,16 @@ void MatrizEliminarFila(matrix* m, int row)
         m->mat[row][j] = N;
     MatrizDespFil(m,row);
 }
+
+
+int EliminarFilasCompletasConPuntaje(matrix* m)
+{
+    uint8_t filasEliminadas = 0;
+
+    int8_t filaCompleta;
+    while((filaCompleta = MatrizFilCompleta(m)) != -1) {
+        MatrizEliminarFila(m, filaCompleta);
+        filasEliminadas++;
+    }
+    return filasEliminadas > 0 ? filasEliminadas*100 + (filasEliminadas-1)*100 : 0;
+}

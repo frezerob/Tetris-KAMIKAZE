@@ -1,6 +1,6 @@
 #include "core.h"
 #include "menu.h"
-
+#include "graficos.h"
 
 int8_t MenuIniciar(TDAconfig config)
 {
@@ -31,8 +31,17 @@ int8_t MenuIniciar(TDAconfig config)
         printf("%s",gbt_obtener_log());
         return COLOR_ERR;
     }
+    eGBT_Tecla tecla;
 
+    while(TRUE)
+    {
+        gbt_procesar_entrada();
+        tecla = gbt_obtener_tecla_presionada();
+        if(tecla == GBTK_q)
+            break;
+        ImprimirMenu();
 
+    }
 
     return 0;
 }

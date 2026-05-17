@@ -38,16 +38,14 @@ void DibujarCelda(uint16_t X, uint16_t Y, uint8_t color, uint8_t TAMANIO)
             gbt_dibujar_pixel(c,f,color);
 }
 
-void DibujarCaracter(char c, uint16_t X, uint16_t Y, uint8_t color)
-{
-    if(c<'A' || c>'Z')
-        return;
-    // 'A' representaria ese offset de 65 que tiene e ASCII
-    uint8_t indice = c - 'A';
+
+void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t color){
+
+
     uint8_t bits;
     for(int8_t f=0; f<TAM_FUENTE8X8; f++){
 
-        bits =  fuente8x8[indice][f];
+        bits =  bitmap[f];
 
 
         for(int8_t c=0; c<TAM_FUENTE8X8; c++){
@@ -62,9 +60,39 @@ void DibujarCaracter(char c, uint16_t X, uint16_t Y, uint8_t color)
             }
         }
     }
+}
 
+
+
+void DibujarLetra(char c, uint16_t X, uint16_t Y, uint8_t color)
+{
+    if(c<'A' || c>'Z')
+        return;
+    // 'A' representaria ese offset de 65 que tiene e ASCII
+    uint8_t indice = c - 'A';
+    DibujarBitMap8x8(fuente8x8[indice],X,Y,color);
 
 }
+
+void DibujarNumero(char num,uint16_t X, uint16_t Y, uint8_t color){
+    if (num<'0' || num>'9')
+        return;
+
+    uint8_t indice = num - '0';
+
+    DibujarBitMap8x8(fuente8x8_num[indice],X,Y,color);
+
+}
+
+
+void DibujarCaracter(char c, uint16_t X, uint16_t Y,uint8_t color)
+{
+    if(c >= 'A' && c<='Z')
+        DibujarLetra(c,X,Y,color);
+    else if(c>='0' || c<='9')
+        DibujarNumero(c,X,Y,color);
+}
+
 
 void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color)
 {
@@ -78,4 +106,16 @@ void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color)
         texto++;
 
     }
+}
+
+void ImprimirMenu()
+{
+    gbt_borrar_backbuffer(BRD);
+
+    uint16_t TITULO_Y = config.ALTO / 6;
+    uint16_t  TITULO_X = config.ANCHO/2 - 200;
+
+    DibujarTexto("TETRIZ KAMIKAZE",TITULO_X,TITULO_Y,4);
+    gbt_volcar_backbuffer();
+
 }

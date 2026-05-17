@@ -21,6 +21,7 @@ Entrega: No
 #include "graficos.h"
 
 
+int8_t IniciarSistema(int argc, char* argv[]);
 
 
 
@@ -28,29 +29,7 @@ int main(int argc, char* argv[])
 {
     // Deteccion de argumentos (Ancho y Alto)
 
-    if (argc != 3){
-        fprintf(stderr, "ERROR: Falta en argumentos <ancho> <alto> en %s \n",argv[0]);
-        return 1;
-    }
-
-
-    config.ANCHO = atoi(argv[1]), config.ALTO = atoi(argv[2]);
-    if(config.ANCHO == 320 && config.ALTO == 200)
-    {
-        config.ESCALA = 3;
-        config.TAM_CELDA = 8;
-        config.ESCALA_FUENTE = 1;
-    }
-    else if (config.ANCHO == 640 && config.ALTO == 480)
-    {
-        config.ESCALA = 1;
-        config.TAM_CELDA = 20;
-        config.ESCALA_FUENTE = 3;
-    }
-    else
-        return INIT_ERR;
-    config.OFFSET_X = (config.ANCHO - (COL_TABLERO * config.TAM_CELDA)) / 8;
-    config.OFFSET_Y = (config.ALTO - (FIL_TABLERO * config.TAM_CELDA)) / 2;
+    IniciarSistema(argc,argv);
 
 
     semilla();
@@ -69,6 +48,8 @@ int main(int argc, char* argv[])
         return TEMPO_ERR;
     }
 
+    int puntaje = 0;
+    char Spuntaje[17];
     uint8_t X_origen = 0;
     uint8_t Y_origen = 0;
     uint8_t corriendo = 1;
@@ -83,7 +64,7 @@ int main(int argc, char* argv[])
         tecla = gbt_obtener_tecla_presionada();
 
         if(tecla == GBTK_ESCAPE)
-            return FIN;
+            break;
 
         // GRAVEDAD POR TIEMPO — va primero
         if(gbt_temporizador_consumir(temporizador)){
@@ -91,9 +72,7 @@ int main(int argc, char* argv[])
             if(PiezaDetectarColision(&p, &m)){
                 PiezaMoverArriba(&p);
                 PiezaVolcar(&m, &p);
-                int fila;
-                while((fila = MatrizFilCompleta(&m)) != -1)
-                    MatrizEliminarFila(&m, fila);
+                puntaje += EliminarFilasCompletasConPuntaje(&m);
                 tipoPieza(&p, generarPiezaAleatoria());
                 fijada = 1;
             }
@@ -121,24 +100,55 @@ int main(int argc, char* argv[])
                 if(PiezaDetectarColision(&p, &m)){
                     PiezaMoverArriba(&p);
                     PiezaVolcar(&m, &p);
-                    int fila;
-                    while((fila = MatrizFilCompleta(&m)) != -1)
-                        MatrizEliminarFila(&m, fila);
+                    puntaje+= EliminarFilasCompletasConPuntaje(&m);
                     tipoPieza(&p, generarPiezaAleatoria());
                 }
+                else
+                    puntaje++;
             }
         }
 
+        itoa(puntaje,Spuntaje,10);
         // DIBUJADO
         gbt_borrar_backbuffer(BRD);
         DibujarTablero(&m, X_origen, Y_origen);
         DibujarPieza(&p);
-        DibujarTexto("TETRIS",400,0,4);
+        DibujarTexto(Spuntaje,400,0,4);
         gbt_volcar_backbuffer();
     }
 
     gbt_temporizador_destruir(temporizador);
     gbt_destruir_ventana();
+
+    return 0;
+}
+
+
+int8_t IniciarSistema(int argc, char* argv[])
+{
+    if (argc != 3){
+        fprintf(stderr, "ERROR: Falta en argumentos <ancho> <alto> en %s \n",argv[0]);
+        return 1;
+    }
+
+
+    config.ANCHO = atoi(argv[1]), config.ALTO = atoi(argv[2]);
+    if(config.ANCHO == 320 && config.ALTO == 200)
+    {
+        config.ESCALA = 3;
+        config.TAM_CELDA = 8;
+        config.ESCALA_FUENTE = 1;
+    }
+    else if (config.ANCHO == 640 && config.ALTO == 480)
+    {
+        config.ESCALA = 1;
+        config.TAM_CELDA = 20;
+        config.ESCALA_FUENTE = 3;
+    }
+    else
+        return INIT_ERR;
+    config.OFFSET_X = (config.ANCHO - (COL_TABLERO * config.TAM_CELDA)) / 8;
+    config.OFFSET_Y = (config.ALTO - (FIL_TABLERO * config.TAM_CELDA)) / 2;
 
     return 0;
 }
