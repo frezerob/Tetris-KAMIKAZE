@@ -131,6 +131,5 @@ void MatrizEliminarFila(matrix* m, int row)
     // Vaciamos la fila antes de reubicarla
     for(int j = 0; j < m->col; j++)
         m->mat[row][j] = N;
-    // Guardamos el puntero de la fila eliminada
-    MatrizFilCompleta(m);
+    MatrizDespFil(m,row);
 }
