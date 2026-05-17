@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include "GBT/gbt.h"
+#include "config.h"
 
 typedef struct {
     uint8_t (*forma)[16];
@@ -33,10 +34,6 @@ typedef enum {
 
 //MACROS
 #define TITULO "Primera Prueba"
-#define ANCHO 12
-#define ALTO 27
-#define ESCALA 25
-#define TILE_SIZE 10 // Tamaño de la tile
 
 //MACROS TABLERO
 #define FIL_TABLERO 25

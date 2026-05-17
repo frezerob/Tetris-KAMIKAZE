@@ -26,17 +26,39 @@ Entrega: No
 
 int main(int argc, char* argv[])
 {
+    // Deteccion de argumentos (Ancho y Alto)
+
+    if (argc != 3){
+        fprintf(stderr, "ERROR: Falta en argumentos <ancho> <alto> en %s \n",argv[0]);
+        return 1;
+    }
+
+
+    config.ANCHO = atoi(argv[1]), config.ALTO = atoi(argv[2]);
+    if(config.ANCHO == 320 && config.ALTO == 200)
+    {
+        config.ESCALA = 3;
+        config.TAM_CELDA = 8;
+    }
+    else if (config.ANCHO == 640 && config.ALTO == 480)
+    {
+        config.ESCALA = 1;
+        config.TAM_CELDA = 20;
+    }
+    else
+        return INIT_ERR;
+
     semilla();
     matrix m;
     PiezaActiva p;
 
-    if(MenuIniciar() != 0)
+    if(MenuIniciar(config) != 0)
         return INIT_ERR;
     if(MatrizIniciar(&m, FIL_TABLERO, COL_TABLERO) == INIT_ERR)
         return INIT_ERR;
     tipoPieza(&p, generarPiezaAleatoria());
 
-    tGBT_Temporizador* temporizador = gbt_temporizador_crear(0.02);
+    tGBT_Temporizador* temporizador = gbt_temporizador_crear(1);
     if(!temporizador){
         printf("%s", gbt_obtener_log());
         return TEMPO_ERR;
