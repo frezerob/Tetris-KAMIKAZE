@@ -11,6 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="640 480" />
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="lib/GBT_v2026.1C.01/include" />
@@ -36,7 +37,15 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="config.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="config.h" />
 		<Unit filename="core.h" />
+		<Unit filename="fuente8x8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fuente8x8.h" />
 		<Unit filename="funciones.c">
 			<Option compilerVar="CC" />
 		</Unit>
