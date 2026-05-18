@@ -14,4 +14,6 @@ extern const uint8_t fuente8x8[26][8];
 extern const uint8_t fuente8x8_num[10][8];
 
 
+uint16_t CalcularAnchoTexto(char* texto);
+
 #endif // FUENTE8X8_H_INCLUDED

@@ -35,7 +35,6 @@ typedef enum {
 
 //MACROS
 #define TITULO "Primera Prueba"
-
 //MACROS TABLERO
 #define FIL_TABLERO 20
 #define COL_TABLERO 10

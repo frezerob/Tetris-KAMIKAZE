@@ -108,14 +108,32 @@ void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color)
     }
 }
 
-void ImprimirMenu()
+
+void DibujarTextoCentrado(char* texto, uint16_t Y, uint8_t color)
+{
+    uint16_t X = (config.ANCHO - CalcularAnchoTexto(texto))/2;
+    DibujarTexto(texto,X,Y,color);
+}
+
+void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones)
 {
     gbt_borrar_backbuffer(BRD);
-
-    uint16_t TITULO_Y = config.ALTO / 6;
-    uint16_t  TITULO_X = config.ANCHO/2 - 200;
-
-    DibujarTexto("TETRIZ KAMIKAZE",TITULO_X,TITULO_Y,4);
+    uint16_t Y=0;
+    for(uint8_t op = 0; op<cant_opciones; op++){
+        Y += config.ALTO/(cant_opciones*2);
+        if(op == opcion)
+            DibujarTextoCentrado(opciones_menu[op],Y,W);
+        else
+            DibujarTextoCentrado(opciones_menu[op],Y,4);
+    }
     gbt_volcar_backbuffer();
+
+}
+
+void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color)
+{
+    char Spuntaje[17];
+    itoa(puntaje,Spuntaje,10);
+    DibujarTexto(Spuntaje,X,Y,color);
 
 }

@@ -49,7 +49,6 @@ int main(int argc, char* argv[])
     }
 
     int puntaje = 0;
-    char Spuntaje[17];
     uint8_t X_origen = 0;
     uint8_t Y_origen = 0;
     uint8_t corriendo = 1;
@@ -108,12 +107,12 @@ int main(int argc, char* argv[])
             }
         }
 
-        itoa(puntaje,Spuntaje,10);
+
         // DIBUJADO
         gbt_borrar_backbuffer(BRD);
         DibujarTablero(&m, X_origen, Y_origen);
         DibujarPieza(&p);
-        DibujarTexto(Spuntaje,400,0,4);
+        DibujarPuntaje(puntaje,320,config.OFFSET_Y,4);
         gbt_volcar_backbuffer();
     }
 
@@ -127,7 +126,7 @@ int main(int argc, char* argv[])
 int8_t IniciarSistema(int argc, char* argv[])
 {
     if (argc != 3){
-        fprintf(stderr, "ERROR: Falta en argumentos <ancho> <alto> en %s \n",argv[0]);
+        fprintf(stderr, "ERROR: Faltan argumento/s <ancho> <alto> en %s \n",argv[0]);
         return 1;
     }
 
