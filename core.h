@@ -20,20 +20,34 @@ typedef struct {
 typedef enum {
     N,   // Negro
     I,   // Cian
+    I_OSCURO,   // Cian
     O,   // Amarillo
+    O_OSCURO,   // Amarillo
     T,   // Púrpura
+    T_OSCURO,   // Púrpura
     S,   // Verde
+    S_OSCURO,   // Verde
     Z,   // Rojo
+    Z_OSCURO,   // Rojo
     J,   // Azul
+    J_OSCURO,   // Azul
     L,   // Naranja
+    L_OSCURO,   // Naranja
     BRD, // Borde
     W,   // Blanco
     TR   // Transparente
 } eColorTetris;
 
+typedef enum {
+    BLOQUE,
+    PLANO,
+    BORDE,
+    FONDO
+} eTexturas;
 #define ORDEN 4
 
 //MACROS
+#define CANT_TEXTURAS 4
 #define TITULO "Primera Prueba"
 //MACROS TABLERO
 #define FIL_TABLERO 20
