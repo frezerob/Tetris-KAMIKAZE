@@ -220,7 +220,7 @@ void DibujarProximaPieza(uint8_t (*forma)[16], int X, int Y)
                 DibujarCelda(X + j * config.TAM_CELDA,
                              Y + i * config.TAM_CELDA,
                              forma[0][i*ORDEN+j],
-                             config.TAM_CELDA);
+                             config.TAM_CELDA,BLOQUE);
         }
     }
 }

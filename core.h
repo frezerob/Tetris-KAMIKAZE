@@ -65,7 +65,7 @@ typedef enum {
 #define RANGE_ERR -4
 #define TEMPO_ERR -5
 #define FIN 0
-#define CANT_PROXIMAS 5
+#define CANT_PROXIMAS 4
 #define CONFIG_FILE "config.txt"
 
 
