@@ -9,6 +9,7 @@
 #include "GBT/gbt.h"
 #include "fuente8x8.h"
 #include "config.h"
+#include <string.h>
 
 typedef struct {
     uint8_t (*forma)[16];
@@ -64,4 +65,8 @@ typedef enum {
 #define RANGE_ERR -4
 #define TEMPO_ERR -5
 #define FIN 0
+#define CANT_PROXIMAS 5
+#define CONFIG_FILE "config.txt"
+
+
 #endif // CORE_H_INCLUDED

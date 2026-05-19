@@ -2,6 +2,9 @@
 #define MENU_H_INCLUDED
 #include "core.h"
 
-int8_t MenuIniciar(TDAconfig config);
+#define SALIR -2
+
+int MenuIniciar(TDAconfig config);
+void MenuConfiguracion();
 
 #endif // MENU_H_INCLUDED

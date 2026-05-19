@@ -7,6 +7,7 @@
 
 
 
+extern uint8_t (*FORMAS[7])[16];
 
 // Prototipos de funciones
 void semilla();
@@ -20,4 +21,6 @@ void PiezaMoverArriba(PiezaActiva* p);
 void PiezaRotarDerecha(PiezaActiva* p);
 int8_t PiezaDetectarColision(PiezaActiva* p, matrix* m);
 void PiezaRotarIzquierda(PiezaActiva* p);
+int RecalcularVelocidad(int velInicial, int piezas);
+int VelocidadSegunDificultad(int dificultad);
 #endif // FUNCIONES_H_INCLUDED

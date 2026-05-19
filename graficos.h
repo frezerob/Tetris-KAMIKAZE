@@ -11,8 +11,8 @@ void DibujarCaracter(char c, uint16_t X, uint16_t Y,uint8_t color);
 void DibujarNumero(char num,uint16_t X, uint16_t Y, uint8_t color);
 void DibujarLetra(char c, uint16_t X, uint16_t Y, uint8_t color);
 void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color);
-
 void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color);
+void DibujarProximaPieza(uint8_t (*forma)[16], int X, int Y);
 
 
 void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones);

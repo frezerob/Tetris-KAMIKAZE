@@ -147,3 +147,20 @@ void PiezaRotarIzquierda(PiezaActiva* p)
 {
     p->rotacion = (p->rotacion + 3) % 4;
 }
+
+int RecalcularVelocidad(int velInicial, int piezas)
+{
+    int niveles = piezas / 10;
+    int vel = velInicial;
+    for(int i = 0; i < niveles; i++)
+        vel = (vel * 97) / 100;
+    return vel;
+}
+
+int VelocidadSegunDificultad(int dificultad)
+{
+    if(dificultad == 0) return 1000;  // FACIL
+    if(dificultad == 1) return 1500;  // NORMAL
+    if(dificultad == 2) return 200;   // DIFICIL
+    return 1000;
+}

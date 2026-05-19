@@ -211,3 +211,16 @@ void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color)
     DibujarTexto(Spuntaje,X,Y,color);
 
 }
+
+void DibujarProximaPieza(uint8_t (*forma)[16], int X, int Y)
+{
+    for(int i = 0; i < ORDEN; i++){
+        for(int j = 0; j < ORDEN; j++){
+            if(forma[0][i*ORDEN+j] != TR)
+                DibujarCelda(X + j * config.TAM_CELDA,
+                             Y + i * config.TAM_CELDA,
+                             forma[0][i*ORDEN+j],
+                             config.TAM_CELDA);
+        }
+    }
+}
