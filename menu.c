@@ -8,26 +8,49 @@
 int MenuIniciar(TDAconfig cfg)
 {
     tGBT_ColorRGB paleta[] = {
-        {0x00, 0x00, 0x00}, // N          -> NEGRO
-        {0x00, 0xFF, 0xFF}, // I          -> CIAN
-        {0x00, 0xA0, 0xA0}, // I          -> CIAN
-        {0xFF, 0xFF, 0x00}, // O          -> AMARILLO
-        {0xAA, 0xAA, 0x00}, // O OSCURO   -> AMARILLO OSCURO
-        {0x80, 0x00, 0x80}, // T          -> PÚRPURA
-        {0x40, 0x00, 0x40}, // T OSCURO   -> PÚRPURA OSCURO
-        {0x00, 0xFF, 0x00}, // S          -> VERDE
-        {0x00, 0xAA, 0x00}, // S OSCURO   -> VERDE OSCURO
-        {0xFF, 0x00, 0x00}, // Z          -> ROJO
-        {0xAA, 0x00, 0x00}, // Z OSCURO   -> ROJO OSCURO
-        {0x00, 0x00, 0xFF}, // J          -> AZUL
-        {0x00, 0x00, 0xAA}, // J OSCURO   -> AZUL OSCURO
-        {0xFF, 0xA5, 0x00}, // L          -> NARANJA
-        {0xAF, 0x55, 0x00}, // L OSCURO   -> NARANJA OSCURO
-        {0x80, 0x80, 0x80}, // BRD        -> GRIS (Borde)
-        {0xFF, 0xFF, 0xFF}, // W          -> BLANCO
-        {0x01, 0x01, 0x01}  // TR         -> TRANSPARENTE
-    };
+        {0x00, 0x00, 0x00}, // N -> Negro (Fondo)
 
+        // I - CIAN
+        {0x00, 0xD0, 0xD0}, // I        -> Base (Cian medio)
+        {0x00, 0x7A, 0x7A}, // I_OSCURO -> Sombra
+        {0x80, 0xFF, 0xFF}, // I_CLARO  -> Brillo
+
+        // O - AMARILLO
+        {0xD0, 0xD0, 0x00}, // O        -> Base
+        {0x7A, 0x7A, 0x00}, // O_OSCURO -> Sombra
+        {0xFF, 0xFF, 0x80}, // O_CLARO  -> Brillo
+
+        // T - PÚRPURA
+        {0xC0, 0x00, 0xC0}, // T        -> Base
+        {0x70, 0x00, 0x70}, // T_OSCURO -> Sombra
+        {0xFF, 0x80, 0xFF}, // T_CLARO  -> Brillo
+
+        // S - VERDE
+        {0x00, 0xC0, 0x00}, // S        -> Base
+        {0x00, 0x70, 0x00}, // S_OSCURO -> Sombra
+        {0x80, 0xFF, 0x80}, // S_CLARO  -> Brillo
+
+        // Z - ROJO
+        {0xD0, 0x00, 0x00}, // Z        -> Base
+        {0x7A, 0x00, 0x00}, // Z_OSCURO -> Sombra
+        {0xFF, 0x80, 0x80}, // Z_CLARO  -> Brillo
+
+        // J - AZUL
+        {0x22, 0x55, 0xFF}, // J        -> Base
+        {0x00, 0x22, 0xAA}, // J_OSCURO -> Sombra
+        {0x99, 0xBB, 0xFF}, // J_CLARO  -> Brillo
+
+        // L - NARANJA
+        {0xE6, 0x73, 0x00}, // L        -> Base
+        {0x8F, 0x47, 0x00}, // L_OSCURO -> Sombra
+        {0xFF, 0xB3, 0x66}, // L_CLARO  -> Brillo
+
+        {0x80, 0x80, 0x80}, // BRD -> Gris Borde
+        {0x40, 0x40, 0x40}, // BRD_OSCURO -> Gris Borde
+        {0xB0, 0xB0, 0xB0}, // BRD_CLARO -> Gris Borde
+        {0xFF, 0xFF, 0xFF}, // W   -> Blanco
+        {0x01, 0x01, 0x01}  // TR  -> Transparente
+    };
     if(gbt_iniciar() != 0){
         printf("%s", gbt_obtener_log());
         return INIT_ERR;
@@ -46,7 +69,7 @@ int MenuIniciar(TDAconfig cfg)
     int opcion = 0;       // inicializada en 0
     eGBT_Tecla tecla;
 
-    while(1){
+    while(TRUE){
         gbt_procesar_entrada();
         tecla = gbt_obtener_tecla_presionada();
 
@@ -69,7 +92,7 @@ int MenuIniciar(TDAconfig cfg)
 
 void MenuConfiguracion()
 {
-    char* opcMenu[] = {"DIFICULTAD", "RESOLUCION", "VOLVER"};
+    // char* opcMenu[] = {"DIFICULTAD", "RESOLUCION", "VOLVER"}; ???
     int cant = 3;
     int opcion = 0;
     int corriendo = 1;

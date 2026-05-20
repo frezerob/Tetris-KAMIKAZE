@@ -19,24 +19,42 @@ typedef struct {
 } PiezaActiva;
 
 typedef enum {
-    N,   // Negro
-    I,   // Cian
-    I_OSCURO,   // Cian
-    O,   // Amarillo
-    O_OSCURO,   // Amarillo
-    T,   // Púrpura
-    T_OSCURO,   // Púrpura
-    S,   // Verde
-    S_OSCURO,   // Verde
-    Z,   // Rojo
-    Z_OSCURO,   // Rojo
-    J,   // Azul
-    J_OSCURO,   // Azul
-    L,   // Naranja
-    L_OSCURO,   // Naranja
-    BRD, // Borde
-    W,   // Blanco
-    TR   // Transparente
+    N,      // Negro
+    // I - CIAN
+    I,
+    I_OSCURO,
+    I_CLARO,
+    // O - AMARILLO
+    O,
+    O_OSCURO,
+    O_CLARO,
+    // T - PÚRPURA
+    T,
+    T_OSCURO,
+    T_CLARO,
+    // S - VERDE
+    S,
+    S_OSCURO,
+    S_CLARO,
+    // Z - ROJO
+    Z,
+    Z_OSCURO,
+    Z_CLARO,
+    // J - AZUL
+    J,
+    J_OSCURO,
+    J_CLARO,
+    // L - NARANJA
+    L,
+    L_OSCURO,
+    L_CLARO,
+    // INTERFAZ Y BORDES
+    BRD,
+    BRD_OSCURO,
+    BRD_CLARO,
+
+    W,                      // Blanco estático
+    TR                      // Transparente
 } eColorTetris;
 
 typedef enum {

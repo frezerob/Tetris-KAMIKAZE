@@ -65,7 +65,6 @@ int main(int argc, char* argv[])
     int puntaje = 0;
     int X_origen = 0;
     int Y_origen = 0;
-    int corriendo = 1;
     int fijada = 0;
     eGBT_Tecla tecla;
 
@@ -149,12 +148,13 @@ int main(int argc, char* argv[])
         }
 
         // DIBUJADO
-        gbt_borrar_backbuffer(BRD);
+        gbt_borrar_backbuffer(N);
+        DibujarFondo();
         DibujarTablero(&m, X_origen, Y_origen);
         DibujarPieza(&p);
 
-
-        DibujarPuntaje(puntaje, config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + 10, config.OFFSET_Y, 4);
+        DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y,T);
+        DibujarPuntaje(puntaje, config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE") + 25, config.OFFSET_Y, T);
 
         // Dibujamos las proximas piezas a la derecha del tablero
         int xProx = config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + 10;

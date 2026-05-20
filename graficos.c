@@ -14,7 +14,7 @@ void DibujarTablero(matrix* m, uint16_t X, uint16_t Y){
                 if(m->mat[i][j]!=N)
                     DibujarCelda(PosX+j*config.TAM_CELDA,PosY+i*config.TAM_CELDA,m->mat[i][j],config.TAM_CELDA,BLOQUE);
                 else
-                    DibujarCelda(PosX+j*config.TAM_CELDA,PosY+i*config.TAM_CELDA,m->mat[i][j],config.TAM_CELDA,PLANO);
+                    DibujarCelda(PosX+j*config.TAM_CELDA,PosY+i*config.TAM_CELDA,N,config.TAM_CELDA,FONDO);
         }
     }
 }
@@ -37,48 +37,60 @@ void DibujarPieza(PiezaActiva* p)
 
 const uint8_t texturas[CANT_TEXTURAS][8][8] =
 {
+    //BLOQUE
     {
-        {W,W,W,W,W,W,W,W},
-        {1,W,W,W,W,W,W,1},
-        {1,1,0,0,0,0,1,1},
-        {1,1,0,0,0,0,1,1},
-        {1,1,0,0,0,0,1,1},
-        {1,1,0,0,0,0,1,1},
-        {1,BRD,BRD,BRD,BRD,BRD,BRD,1},
-        {BRD,BRD,BRD,BRD,BRD,BRD,BRD,BRD}
+        {2,2,2,2,2,2,2,2}, // Fila superior: Brillo Claro (color + 2)
+        {2,0,0,0,0,0,0,1}, // Izquierda: Brillo (color + 2) | Derecha: Sombra (color + 1)
+        {2,0,0,0,0,0,0,1}, // Centro: Cuerpo normal de la pieza (color)
+        {2,0,0,0,0,0,0,1},
+        {2,0,0,0,0,0,0,1},
+        {2,0,0,0,0,0,0,1},
+        {2,0,0,0,0,0,0,1},
+        {1,1,1,1,1,1,1,1}  // Fila inferior: Sombra Oscura (color + 1)
     },
-    {
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0}
-    },
-    {
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0}
-    },
-    {
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0}
-    }
 
+    //PLANO
+    {
+        {0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}
+    },
+
+    //BORDE -> Textura de ladrillo estático para las paredes del tablero
+    {
+        {BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO},
+        {BRD_CLARO, BRD,       BRD,       BRD,       BRD,       BRD,       BRD,       BRD_OSCURO},
+        {BRD_CLARO, BRD,       BRD,       BRD,       BRD,       BRD,       BRD,       BRD_OSCURO},
+        {BRD_CLARO, BRD,       BRD,       BRD,       BRD,       BRD,       BRD,       BRD_OSCURO},
+        {BRD_CLARO, BRD,       BRD,       BRD,       BRD,       BRD,       BRD,       BRD_OSCURO},
+        {BRD_CLARO, BRD,       BRD,       BRD,       BRD,       BRD,       BRD,       BRD_OSCURO},
+        {BRD_CLARO, BRD,       BRD,       BRD,       BRD,       BRD,       BRD,       BRD_OSCURO},
+        {BRD_OSCURO,BRD_OSCURO,BRD_OSCURO,BRD_OSCURO,BRD_OSCURO,BRD_OSCURO,BRD_OSCURO,BRD_OSCURO}
+    },
+    //FONDO
+    {
+        {BRD_OSCURO, BRD_OSCURO, BRD_OSCURO, BRD_OSCURO, BRD_OSCURO, BRD_OSCURO, BRD_OSCURO, BRD_OSCURO},
+        {BRD_OSCURO, 0, 0, 0, 0, 0, 0, 0},
+        {BRD_OSCURO, 0, 0, 0, 0, 0, 0, 0},
+        {BRD_OSCURO, 0, 0, 0, 0, 0, 0, 0},
+        {BRD_OSCURO, 0, 0, 0, 0, 0, 0, 0},
+        {BRD_OSCURO, 0, 0, 0, 0, 0, 0, 0},
+        {BRD_OSCURO, 0, 0, 0, 0, 0, 0, 0},
+        {BRD_OSCURO, 0, 0, 0, 0, 0, 0, 0}
+    }
 };
+
+void DibujarFondo()
+{
+    const uint8_t ANCHO_CELDAS = config.ANCHO / config.TAM_CELDA;
+    const uint8_t ALTO_CELDAS = config.ALTO / config.TAM_CELDA;
+    for(uint8_t f = 0; f < ALTO_CELDAS; f++){
+        for(uint8_t c = 0; c < ANCHO_CELDAS; c++){
+            uint16_t X = config.TAM_CELDA * c;
+            uint16_t Y = config.TAM_CELDA * f;
+            DibujarCelda(X,Y,0,config.TAM_CELDA,BORDE);
+        }
+    }
+}
 
 void DibujarCelda(uint16_t X, uint16_t Y, uint8_t color, uint8_t TAMANIO, eTexturas textura)
 {
@@ -100,11 +112,11 @@ void DibujarCelda(uint16_t X, uint16_t Y, uint8_t color, uint8_t TAMANIO, eTextu
                     case 1:
                         gbt_dibujar_pixel(c,f,color+1);
                         break;
-                    case W:
-                        gbt_dibujar_pixel(c,f,W);
+                    case 2:
+                        gbt_dibujar_pixel(c,f,color+2);
                         break;
-                    case BRD:
-                        gbt_dibujar_pixel(c,f,BRD);
+                    default:
+                        gbt_dibujar_pixel(c,f,tipo_pixel);
 
                 }
         }
@@ -191,14 +203,14 @@ void DibujarTextoCentrado(char* texto, uint16_t Y, uint8_t color)
 
 void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones)
 {
-    gbt_borrar_backbuffer(BRD);
+    gbt_borrar_backbuffer(BRD_OSCURO);
     uint16_t Y=0;
     for(uint8_t op = 0; op<cant_opciones; op++){
         Y += config.ALTO/(cant_opciones*2);
         if(op == opcion)
             DibujarTextoCentrado(opciones_menu[op],Y,W);
         else
-            DibujarTextoCentrado(opciones_menu[op],Y,4);
+            DibujarTextoCentrado(opciones_menu[op],Y,S);
     }
     gbt_volcar_backbuffer();
 

@@ -19,7 +19,6 @@
 				<Linker>
 					<Add option="-lgbt" />
 					<Add directory="lib/GBT_v2026.1C.01/lib" />
-					<Add directory="lib/GBT_v2026.1C.01/bin" />
 				</Linker>
 			</Target>
 			<Target title="Release">
