@@ -22,60 +22,128 @@ Entrega: No
 #include "config.h"
 
 
-
-int8_t IniciarSistema(int argc, char* argv[]);
-
-
+int Jugar();
+int IniciarSistema(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
 {
-    IniciarSistema(argc, argv);
+    if(IniciarSistema(argc, argv) == INIT_ERR)
+        return INIT_ERR;
     semilla();
 
+    int ret = MenuIniciar(config);
+    if(ret == SALIR) return 0;
+
+    while(1){
+        ret = Jugar();
+
+        if(ret == SALIR)
+            break;
+        if(ret == MENU_PRINCIPAL){
+            ret = MenuIniciar(config);
+            if(ret == SALIR) break;
+            // si ret == 0 (JUGAR) vuelve a Jugar()
+        }
+        // si ret == REINICIAR vuelve directo a Jugar()
+    }
+
+    gbt_destruir_ventana();
+    return 0;
+}
+
+int IniciarSistema(int argc, char* argv[])
+{
+    ConfigCargar(CONFIG_FILE);
+    config.OFFSET_X = (config.ANCHO - (COL_TABLERO * config.TAM_CELDA)) / 8;
+    config.OFFSET_Y = (config.ALTO  - (FIL_TABLERO * config.TAM_CELDA)) / 2;
+
+ tGBT_ColorRGB paleta[PALETA_MAX_COLORES] = {
+    {0x00, 0x00, 0x00}, // N
+    {0x00, 0xFF, 0xFF}, // I
+    {0x00, 0xAA, 0xAA}, // I_OSCURO
+    {0x99, 0xFF, 0xFF}, // I_CLARO
+    {0xFF, 0xFF, 0x00}, // O
+    {0xAA, 0xAA, 0x00}, // O_OSCURO
+    {0xFF, 0xFF, 0x99}, // O_CLARO
+    {0x80, 0x00, 0x80}, // T
+    {0x55, 0x00, 0x55}, // T_OSCURO
+    {0xCC, 0x99, 0xCC}, // T_CLARO
+    {0x00, 0xFF, 0x00}, // S
+    {0x00, 0xAA, 0x00}, // S_OSCURO
+    {0x99, 0xFF, 0x99}, // S_CLARO
+    {0xFF, 0x00, 0x00}, // Z
+    {0xAA, 0x00, 0x00}, // Z_OSCURO
+    {0xFF, 0x99, 0x99}, // Z_CLARO
+    {0x00, 0x00, 0xFF}, // J
+    {0x00, 0x00, 0xAA}, // J_OSCURO
+    {0x99, 0x99, 0xFF}, // J_CLARO
+    {0xFF, 0xA5, 0x00}, // L
+    {0xAA, 0x6E, 0x00}, // L_OSCURO
+    {0xFF, 0xD1, 0x99}, // L_CLARO
+    {0x80, 0x80, 0x80}, // BRD
+    {0x55, 0x55, 0x55}, // BRD_OSCURO
+    {0xCC, 0xCC, 0xCC}, // BRD_CLARO
+    {0xFF, 0xFF, 0xFF}, // W
+    {0x01, 0x01, 0x01}, // TR
+};
+    if(gbt_iniciar() != 0){
+        printf("%s", gbt_obtener_log());
+        return INIT_ERR;
+    }
+    if(gbt_crear_ventana(TITULO, config.ANCHO, config.ALTO, config.ESCALA) != 0){
+        printf("%s", gbt_obtener_log());
+        return INIT_ERR;
+    }
+    if(gbt_aplicar_paleta(paleta, PALETA_MAX_COLORES, GBT_FORMATO_888) != 0){
+        printf("%s", gbt_obtener_log());
+        return INIT_ERR;
+    }
+
+    return 0;
+}
+
+
+int Jugar()
+{
     matrix m;
     PiezaActiva p;
 
-    int retMenu = MenuIniciar(config);
-    if(retMenu == INIT_ERR) return INIT_ERR;
-    if(retMenu == SALIR)    return 0;
     if(MatrizIniciar(&m, FIL_TABLERO, COL_TABLERO) == INIT_ERR)
         return INIT_ERR;
 
-    // Inicializamos el array de proximas piezas
     int proximas[CANT_PROXIMAS];
     for(int i = 0; i < CANT_PROXIMAS; i++)
         proximas[i] = generarPiezaAleatoria();
 
-    // La pieza actual es la primera del array
     tipoPieza(&p, proximas[0]);
     for(int i = 0; i < CANT_PROXIMAS - 1; i++)
         proximas[i] = proximas[i+1];
     proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
 
-    // Velocidad
     int velActual = VelocidadSegunDificultad(config.DIFICULTAD);
     int piezasCaidas = 0;
+    int puntaje = 0;
+    int X_origen = 0;
+    int Y_origen = 0;
+    int corriendo = 1;
+    int fijada = 0;
+    int gameOver = 0;
+    eGBT_Tecla tecla;
 
     tGBT_Temporizador* temporizador = gbt_temporizador_crear(velActual / 1000.0);
     if(!temporizador){
         printf("%s", gbt_obtener_log());
-        return TEMPO_ERR;
+        return INIT_ERR;
     }
 
-    int puntaje = 0;
-    int X_origen = 0;
-    int Y_origen = 0;
-    int fijada = 0;
-    eGBT_Tecla tecla;
-
-    while(TRUE)
+    while(corriendo)
     {
         fijada = 0;
         gbt_procesar_entrada();
         tecla = gbt_obtener_tecla_presionada();
 
         if(tecla == GBTK_ESCAPE)
-            break;
+            corriendo = 0;
 
         // GRAVEDAD POR TIEMPO
         if(gbt_temporizador_consumir(temporizador)){
@@ -85,19 +153,21 @@ int main(int argc, char* argv[])
                 PiezaVolcar(&m, &p);
                 puntaje += EliminarFilasCompletasConPuntaje(&m);
 
-                // Rotamos el array de proximas
                 tipoPieza(&p, proximas[0]);
                 for(int i = 0; i < CANT_PROXIMAS - 1; i++)
                     proximas[i] = proximas[i+1];
                 proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
 
-                // Velocidad creciente cada 10 piezas
+                if(PiezaDetectarColision(&p, &m)){
+                    corriendo = 0;
+                    gameOver = 1;
+                }
+
                 piezasCaidas++;
                 if(piezasCaidas % 10 == 0){
                     velActual = RecalcularVelocidad(VelocidadSegunDificultad(config.DIFICULTAD), piezasCaidas);
                     gbt_temporizador_destruir(temporizador);
                     temporizador = gbt_temporizador_crear(velActual / 1000.0);
-                    printf("%d",velActual);
                 }
 
                 fijada = 1;
@@ -128,18 +198,21 @@ int main(int argc, char* argv[])
                     PiezaVolcar(&m, &p);
                     puntaje += EliminarFilasCompletasConPuntaje(&m);
 
-                    // Rotamos el array de proximas
                     tipoPieza(&p, proximas[0]);
                     for(int i = 0; i < CANT_PROXIMAS - 1; i++)
                         proximas[i] = proximas[i+1];
                     proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
+
+                    if(PiezaDetectarColision(&p, &m)){
+                        corriendo = 0;
+                        gameOver = 1;
+                    }
 
                     piezasCaidas++;
                     if(piezasCaidas % 10 == 0){
                         velActual = RecalcularVelocidad(VelocidadSegunDificultad(config.DIFICULTAD), piezasCaidas);
                         gbt_temporizador_destruir(temporizador);
                         temporizador = gbt_temporizador_crear(velActual / 1000.0);
-                        printf("%d",velActual);
                     }
                 }
                 else
@@ -152,11 +225,9 @@ int main(int argc, char* argv[])
         DibujarFondo();
         DibujarTablero(&m, X_origen, Y_origen);
         DibujarPieza(&p);
-
-        DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y,T);
+        DibujarTextoCentrado("PUNTAJE", config.OFFSET_Y, T);
         DibujarPuntaje(puntaje, config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE") + 25, config.OFFSET_Y, T);
 
-        // Dibujamos las proximas piezas a la derecha del tablero
         int xProx = config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + 10;
         int yProx = config.OFFSET_Y + 20;
         for(int i = 0; i < CANT_PROXIMAS; i++)
@@ -166,18 +237,9 @@ int main(int argc, char* argv[])
     }
 
     gbt_temporizador_destruir(temporizador);
-    gbt_destruir_ventana();
 
-    return 0;
-}
+    if(gameOver)
+        return MenuGameOver(puntaje);
 
-
-int8_t IniciarSistema(int argc, char* argv[])
-{
-     ConfigCargar(CONFIG_FILE);
-    // OFFSET se calcula después de tener TAM_CELDA
-    config.OFFSET_X = (config.ANCHO - (COL_TABLERO * config.TAM_CELDA)) / 8;
-    config.OFFSET_Y = (config.ALTO  - (FIL_TABLERO * config.TAM_CELDA)) / 2;
-
-    return 0;
+    return SALIR;
 }
