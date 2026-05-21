@@ -103,16 +103,16 @@ int MenuGameOver(int puntaje)
         gbt_borrar_backbuffer(N);
 
         // Dibujamos todo antes de volcar
-        DibujarTextoCentrado("GAME OVER", config.ALTO / 4, W);
+        DibujarTextoCentrado("GAME OVER", config.ALTO / 4, W, 0);
         DibujarPuntaje(puntaje, (config.ANCHO - CalcularAnchoTexto("000000")) / 2, config.ALTO / 4 + 20, 4);
 
         // Dibujamos las opciones manualmente sin usar ImprimirMenu
         int Y = config.ALTO / 2;
         for(int i = 0; i < cant; i++){
             if(i == opcion)
-                DibujarTextoCentrado(opciones[i], Y, W);
+                DibujarTextoCentrado(opciones[i], Y, W,0);
             else
-                DibujarTextoCentrado(opciones[i], Y, 4);
+                DibujarTextoCentrado(opciones[i], Y, 4,0);
             Y += config.ALTO / (cant * 2);
         }
 
