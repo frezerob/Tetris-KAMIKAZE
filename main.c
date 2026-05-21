@@ -223,10 +223,14 @@ int Jugar()
         // DIBUJADO
         gbt_borrar_backbuffer(N);
         DibujarFondo();
+
         DibujarTablero(&m, X_origen, Y_origen);
         DibujarPieza(&p);
-        DibujarTextoCentrado("PUNTAJE", config.OFFSET_Y, T);
-        DibujarPuntaje(puntaje, config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE") + 25, config.OFFSET_Y, T);
+        DibujarRectangulo(config.OFFSET_X + (COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
+        DibujarRectangulo(config.OFFSET_X,10,26,2,N,PLANO);
+        DibujarTexto("TETRIS KAMIKAZE",config.OFFSET_X,15,S);
+        DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y + 7,T,-config.OFFSET_X -5);
+        DibujarPuntaje(puntaje, config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE") + 15, config.OFFSET_Y + 7, T);
 
         int xProx = config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + 10;
         int yProx = config.OFFSET_Y + 20;
@@ -241,5 +245,12 @@ int Jugar()
     if(gameOver)
         return MenuGameOver(puntaje);
 
-    return SALIR;
+int8_t IniciarSistema(int argc, char* argv[])
+{
+     ConfigCargar(CONFIG_FILE);
+    // OFFSET se calcula despu�s de tener TAM_CELDA
+    //config.OFFSET_X = (config.ANCHO - (COL_TABLERO * config.TAM_CELDA)) / 8;
+    config.OFFSET_X = 2 * config.TAM_CELDA;
+    config.OFFSET_Y = 4 * config.TAM_CELDA;
+    //config.OFFSET_Y = (config.ALTO  - (FIL_TABLERO * config.TAM_CELDA)) / 2 + 10;
 }

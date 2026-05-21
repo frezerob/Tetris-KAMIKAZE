@@ -195,9 +195,9 @@ void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color)
 }
 
 
-void DibujarTextoCentrado(char* texto, uint16_t Y, uint8_t color)
+void DibujarTextoCentrado(char* texto, uint16_t Y, uint8_t color, uint16_t OFFSET_X)
 {
-    uint16_t X = (config.ANCHO - CalcularAnchoTexto(texto))/2;
+    uint16_t X = (config.ANCHO - CalcularAnchoTexto(texto))/2 + OFFSET_X;
     DibujarTexto(texto,X,Y,color);
 }
 
@@ -208,9 +208,9 @@ void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones)
     for(uint8_t op = 0; op<cant_opciones; op++){
         Y += config.ALTO/(cant_opciones*2);
         if(op == opcion)
-            DibujarTextoCentrado(opciones_menu[op],Y,W);
+            DibujarTextoCentrado(opciones_menu[op],Y,W,0);
         else
-            DibujarTextoCentrado(opciones_menu[op],Y,S);
+            DibujarTextoCentrado(opciones_menu[op],Y,S,0);
     }
     gbt_volcar_backbuffer();
 
@@ -233,6 +233,19 @@ void DibujarProximaPieza(uint8_t (*forma)[16], int X, int Y)
                              Y + i * config.TAM_CELDA,
                              forma[0][i*ORDEN+j],
                              config.TAM_CELDA,BLOQUE);
+        }
+    }
+}
+
+void DibujarRectangulo(uint16_t X, uint16_t Y, uint16_t ancho_celdas, uint16_t alto_celdas, uint8_t color, eTexturas textura)
+{
+    uint16_t INICIO_CELDA_X;
+    uint16_t INICIO_CELDA_Y;
+    for(uint16_t f = 0; f < alto_celdas; f++){
+        for(uint16_t c = 0; c< ancho_celdas ; c++){
+            INICIO_CELDA_X = X + (config.TAM_CELDA * c);
+            INICIO_CELDA_Y = Y + (config.TAM_CELDA * f);
+            DibujarCelda(INICIO_CELDA_X,INICIO_CELDA_Y,color,config.TAM_CELDA,textura);
         }
     }
 }
