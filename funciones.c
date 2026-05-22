@@ -157,10 +157,12 @@ int RecalcularVelocidad(int velInicial, int piezas)
     return vel;
 }
 
-int VelocidadSegunDificultad(int dificultad)
+uint16_t VelocidadSegunDificultad(int dificultad)
 {
-    if(dificultad == 0) return 1000;  // FACIL
-    if(dificultad == 1) return 1500;  // NORMAL
-    if(dificultad == 2) return 200;   // DIFICIL
-    return 1000;
+    switch(dificultad){
+        case 0: return 1000;
+        case 1: return 1500;
+        case 2: return 200;
+        default: return 1000;
+    }
 }

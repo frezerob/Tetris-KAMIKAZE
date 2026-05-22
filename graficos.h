@@ -13,9 +13,11 @@ void DibujarLetra(char c, uint16_t X, uint16_t Y, uint8_t color);
 void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color);
 void DibujarTextoCentrado(char* texto, uint16_t Y, uint8_t color, uint16_t OFFSET_X);
 void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color);
-void DibujarProximaPieza(uint8_t (*forma)[16], int X, int Y);
+void DibujarProximaPieza(uint8_t (*forma)[16], uint16_t X, uint16_t Y);
 void DibujarFondo();
 
 void DibujarRectangulo(uint16_t X, uint16_t Y, uint16_t ancho_celdas, uint16_t alto_celdas, uint8_t color, eTexturas textura);
 void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones);
+
+void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[]);
 #endif // GRAFICOS_H_INCLUDED

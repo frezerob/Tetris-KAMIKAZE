@@ -72,14 +72,18 @@ void MenuConfiguracion()
                 if(config.ANCHO == 320){
                     config.ANCHO = 640;
                     config.ALTO  = 480;
+                    config.TAM_CELDA = 20;
                 }
                 else{
+                    config.TAM_CELDA = 8;
                     config.ANCHO = 320;
                     config.ALTO  = 200;
                 }
+                config.OFFSET_X = 2 * config.TAM_CELDA;
+                config.OFFSET_Y = 4 * config.TAM_CELDA;
+
+
                 ConfigAplicarResolucion();
-                config.OFFSET_X = (config.ANCHO - (COL_TABLERO * config.TAM_CELDA)) / 8;
-                config.OFFSET_Y = (config.ALTO  - (FIL_TABLERO * config.TAM_CELDA)) / 2;
                 ConfigGuardar(CONFIG_FILE);
 
                 gbt_destruir_ventana();
@@ -92,23 +96,35 @@ void MenuConfiguracion()
             corriendo = 0;
     }
 }
+
+void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opciones)
+{
+    *tecla = gbt_obtener_tecla_presionada();
+    if(*tecla == GBTK_w)
+        *opcion = (*opcion + cantidad_opciones - 1) % cantidad_opciones;
+    if(*tecla == GBTK_s)
+        *opcion = (*opcion + 1) % cantidad_opciones;
+}
+
 int MenuGameOver(int puntaje)
 {
     char* opciones[] = {"REINICIAR", "MENU PRINCIPAL"};
-    int cant = 2;
-    int opcion = 0;
+    uint8_t cant = 2;
+    uint8_t opcion = 0;
     eGBT_Tecla tecla;
-
+    char spuntaje[16];
+    itoa(puntaje,spuntaje,10);
     while(1){
         gbt_borrar_backbuffer(N);
+        DibujarFondo();
 
         // Dibujamos todo antes de volcar
-        DibujarTextoCentrado("GAME OVER", config.ALTO / 4, W, 0);
-        DibujarPuntaje(puntaje, (config.ANCHO - CalcularAnchoTexto("000000")) / 2, config.ALTO / 4 + 20, 4);
+        DibujarTextoCentrado("GAME OVER", config.ALTO / 4, 4, 0);
+        DibujarTextoCentrado(spuntaje,config.OFFSET_Y,O,0);
 
         // Dibujamos las opciones manualmente sin usar ImprimirMenu
-        int Y = config.ALTO / 2;
-        for(int i = 0; i < cant; i++){
+        uint16_t Y = config.ALTO / 2;
+        for(uint8_t i = 0; i < cant; i++){
             if(i == opcion)
                 DibujarTextoCentrado(opciones[i], Y, W,0);
             else
@@ -119,12 +135,9 @@ int MenuGameOver(int puntaje)
         gbt_volcar_backbuffer();
 
         gbt_procesar_entrada();
-        tecla = gbt_obtener_tecla_presionada();
 
-        if(tecla == GBTK_w)
-            opcion = (opcion + cant - 1) % cant;
-        if(tecla == GBTK_s)
-            opcion = (opcion + 1) % cant;
+        CalcularOpcion(&tecla,&opcion,cant);
+
         if(tecla == GBTK_ENTER){
             if(opcion == 0) return REINICIAR;
             if(opcion == 1) return MENU_PRINCIPAL;
@@ -133,3 +146,23 @@ int MenuGameOver(int puntaje)
         gbt_esperar(16);
     }
 }
+
+int8_t MenuPausa()
+{
+    eGBT_Tecla tecla;
+    uint8_t opcion = 0;
+    while(1)
+    {
+        gbt_procesar_entrada();
+        char *opciones[] = {"REANUDAR", "SALIR"};
+        ImprimirMenu(opcion,opciones,2);
+        tecla = gbt_obtener_tecla_presionada();
+        CalcularOpcion(&tecla,&opcion,2);
+        if(tecla == GBTK_ENTER)
+            switch(opcion){
+                case 0: return REANUDAR; break;
+                case 1: return SALIR; break;
+            }
+    }
+}
+
