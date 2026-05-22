@@ -5,8 +5,10 @@
 #define SALIR -2
 #define REINICIAR       1
 #define MENU_PRINCIPAL  2
+#define REANUDAR 3
 
 int MenuIniciar(TDAconfig config);
 void MenuConfiguracion();
 int MenuGameOver(int puntaje);
+int8_t MenuPausa();
 #endif // MENU_H_INCLUDED

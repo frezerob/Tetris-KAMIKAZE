@@ -54,38 +54,38 @@ int main(int argc, char* argv[])
 int IniciarSistema(int argc, char* argv[])
 {
     ConfigCargar(CONFIG_FILE);
-    config.OFFSET_X = (config.ANCHO - (COL_TABLERO * config.TAM_CELDA)) / 8;
-    config.OFFSET_Y = (config.ALTO  - (FIL_TABLERO * config.TAM_CELDA)) / 2;
+    config.OFFSET_X = 2 * config.TAM_CELDA;
+    config.OFFSET_Y = 4 * config.TAM_CELDA;
 
- tGBT_ColorRGB paleta[PALETA_MAX_COLORES] = {
-    {0x00, 0x00, 0x00}, // N
-    {0x00, 0xFF, 0xFF}, // I
-    {0x00, 0xAA, 0xAA}, // I_OSCURO
-    {0x99, 0xFF, 0xFF}, // I_CLARO
-    {0xFF, 0xFF, 0x00}, // O
-    {0xAA, 0xAA, 0x00}, // O_OSCURO
-    {0xFF, 0xFF, 0x99}, // O_CLARO
-    {0x80, 0x00, 0x80}, // T
-    {0x55, 0x00, 0x55}, // T_OSCURO
-    {0xCC, 0x99, 0xCC}, // T_CLARO
-    {0x00, 0xFF, 0x00}, // S
-    {0x00, 0xAA, 0x00}, // S_OSCURO
-    {0x99, 0xFF, 0x99}, // S_CLARO
-    {0xFF, 0x00, 0x00}, // Z
-    {0xAA, 0x00, 0x00}, // Z_OSCURO
-    {0xFF, 0x99, 0x99}, // Z_CLARO
-    {0x00, 0x00, 0xFF}, // J
-    {0x00, 0x00, 0xAA}, // J_OSCURO
-    {0x99, 0x99, 0xFF}, // J_CLARO
-    {0xFF, 0xA5, 0x00}, // L
-    {0xAA, 0x6E, 0x00}, // L_OSCURO
-    {0xFF, 0xD1, 0x99}, // L_CLARO
-    {0x80, 0x80, 0x80}, // BRD
-    {0x55, 0x55, 0x55}, // BRD_OSCURO
-    {0xCC, 0xCC, 0xCC}, // BRD_CLARO
-    {0xFF, 0xFF, 0xFF}, // W
-    {0x01, 0x01, 0x01}, // TR
-};
+    tGBT_ColorRGB paleta[PALETA_MAX_COLORES] = {
+        {0x00, 0x00, 0x00}, // N
+        {0x00, 0xFF, 0xFF}, // I
+        {0x00, 0xAA, 0xAA}, // I_OSCURO
+        {0x99, 0xFF, 0xFF}, // I_CLARO
+        {0xFF, 0xFF, 0x00}, // O
+        {0xAA, 0xAA, 0x00}, // O_OSCURO
+        {0xFF, 0xFF, 0x99}, // O_CLARO
+        {0x80, 0x00, 0x80}, // T
+        {0x55, 0x00, 0x55}, // T_OSCURO
+        {0xCC, 0x99, 0xCC}, // T_CLARO
+        {0x00, 0xFF, 0x00}, // S
+        {0x00, 0xAA, 0x00}, // S_OSCURO
+        {0x99, 0xFF, 0x99}, // S_CLARO
+        {0xFF, 0x00, 0x00}, // Z
+        {0xAA, 0x00, 0x00}, // Z_OSCURO
+        {0xFF, 0x99, 0x99}, // Z_CLARO
+        {0x00, 0x00, 0xFF}, // J
+        {0x00, 0x00, 0xAA}, // J_OSCURO
+        {0x99, 0x99, 0xFF}, // J_CLARO
+        {0xFF, 0xA5, 0x00}, // L
+        {0xAA, 0x6E, 0x00}, // L_OSCURO
+        {0xFF, 0xD1, 0x99}, // L_CLARO
+        {0x80, 0x80, 0x80}, // BRD
+        {0x55, 0x55, 0x55}, // BRD_OSCURO
+        {0xCC, 0xCC, 0xCC}, // BRD_CLARO
+        {0xFF, 0xFF, 0xFF}, // W
+        {0x01, 0x01, 0x01}, // TR
+    };
     if(gbt_iniciar() != 0){
         printf("%s", gbt_obtener_log());
         return INIT_ERR;
@@ -120,11 +120,9 @@ int Jugar()
         proximas[i] = proximas[i+1];
     proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
 
-    int velActual = VelocidadSegunDificultad(config.DIFICULTAD);
+    uint16_t velActual = VelocidadSegunDificultad(config.DIFICULTAD);
     int piezasCaidas = 0;
     int puntaje = 0;
-    int X_origen = 0;
-    int Y_origen = 0;
     int corriendo = 1;
     int fijada = 0;
     int gameOver = 0;
@@ -142,9 +140,11 @@ int Jugar()
         gbt_procesar_entrada();
         tecla = gbt_obtener_tecla_presionada();
 
-        if(tecla == GBTK_ESCAPE)
-            corriendo = 0;
-
+        if(tecla == GBTK_ESCAPE){
+            int8_t opcion = MenuPausa();
+            if(opcion == SALIR)
+                break;
+        }
         // GRAVEDAD POR TIEMPO
         if(gbt_temporizador_consumir(temporizador)){
             PiezaMoverAbajo(&p);
@@ -220,37 +220,15 @@ int Jugar()
             }
         }
 
-        // DIBUJADO
-        gbt_borrar_backbuffer(N);
-        DibujarFondo();
+        RenderizarJuego(&p,&m,puntaje,proximas);
 
-        DibujarTablero(&m, X_origen, Y_origen);
-        DibujarPieza(&p);
-        DibujarRectangulo(config.OFFSET_X + (COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
-        DibujarRectangulo(config.OFFSET_X,10,26,2,N,PLANO);
-        DibujarTexto("TETRIS KAMIKAZE",config.OFFSET_X,15,S);
-        DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y + 7,T,-config.OFFSET_X -5);
-        DibujarPuntaje(puntaje, config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE") + 15, config.OFFSET_Y + 7, T);
 
-        int xProx = config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + 10;
-        int yProx = config.OFFSET_Y + 20;
-        for(int i = 0; i < CANT_PROXIMAS; i++)
-            DibujarProximaPieza(FORMAS[proximas[i]], xProx, yProx + i * (ORDEN * config.TAM_CELDA + 5));
 
-        gbt_volcar_backbuffer();
     }
 
     gbt_temporizador_destruir(temporizador);
 
     if(gameOver)
         return MenuGameOver(puntaje);
-
-int8_t IniciarSistema(int argc, char* argv[])
-{
-     ConfigCargar(CONFIG_FILE);
-    // OFFSET se calcula despu�s de tener TAM_CELDA
-    //config.OFFSET_X = (config.ANCHO - (COL_TABLERO * config.TAM_CELDA)) / 8;
-    config.OFFSET_X = 2 * config.TAM_CELDA;
-    config.OFFSET_Y = 4 * config.TAM_CELDA;
-    //config.OFFSET_Y = (config.ALTO  - (FIL_TABLERO * config.TAM_CELDA)) / 2 + 10;
+    return SALIR;
 }

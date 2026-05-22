@@ -203,7 +203,8 @@ void DibujarTextoCentrado(char* texto, uint16_t Y, uint8_t color, uint16_t OFFSE
 
 void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones)
 {
-    gbt_borrar_backbuffer(BRD_OSCURO);
+    gbt_borrar_backbuffer(N);
+    DibujarFondo();
     uint16_t Y=0;
     for(uint8_t op = 0; op<cant_opciones; op++){
         Y += config.ALTO/(cant_opciones*2);
@@ -224,10 +225,10 @@ void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color)
 
 }
 
-void DibujarProximaPieza(uint8_t (*forma)[16], int X, int Y)
+void DibujarProximaPieza(uint8_t (*forma)[16], uint16_t X, uint16_t Y)
 {
-    for(int i = 0; i < ORDEN; i++){
-        for(int j = 0; j < ORDEN; j++){
+    for(uint8_t i = 0; i < ORDEN; i++){
+        for(uint16_t j = 0; j < ORDEN; j++){
             if(forma[0][i*ORDEN+j] != TR)
                 DibujarCelda(X + j * config.TAM_CELDA,
                              Y + i * config.TAM_CELDA,
@@ -239,13 +240,38 @@ void DibujarProximaPieza(uint8_t (*forma)[16], int X, int Y)
 
 void DibujarRectangulo(uint16_t X, uint16_t Y, uint16_t ancho_celdas, uint16_t alto_celdas, uint8_t color, eTexturas textura)
 {
+
+    uint16_t X_ALINEADO = X/config.TAM_CELDA * config.TAM_CELDA;
+    uint16_t Y_ALINEADO = Y/config.TAM_CELDA * config.TAM_CELDA;
     uint16_t INICIO_CELDA_X;
     uint16_t INICIO_CELDA_Y;
     for(uint16_t f = 0; f < alto_celdas; f++){
         for(uint16_t c = 0; c< ancho_celdas ; c++){
-            INICIO_CELDA_X = X + (config.TAM_CELDA * c);
-            INICIO_CELDA_Y = Y + (config.TAM_CELDA * f);
+            INICIO_CELDA_X = X_ALINEADO + (config.TAM_CELDA * c);
+            INICIO_CELDA_Y = Y_ALINEADO + (config.TAM_CELDA * f);
             DibujarCelda(INICIO_CELDA_X,INICIO_CELDA_Y,color,config.TAM_CELDA,textura);
         }
     }
+}
+
+
+void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[])
+{
+    gbt_borrar_backbuffer(N);
+    DibujarFondo();
+
+    DibujarTablero(m,0,0);
+    DibujarPieza(p);
+    DibujarRectangulo(config.OFFSET_X + (COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
+    DibujarRectangulo(config.OFFSET_X,10,26,2,N,PLANO);
+    DibujarTexto("TETRIS KAMIKAZE",config.OFFSET_X,12,S);
+    DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y + 7,T,-config.OFFSET_X -5);
+    DibujarPuntaje(puntaje, config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE") + 15, config.OFFSET_Y + 7, T);
+
+    int xProx = config.OFFSET_X + (COL_TABLERO + 2) * config.TAM_CELDA;
+    int yProx = config.OFFSET_Y + config.TAM_CELDA * 3;
+    for(uint8_t i = 0; i < CANT_PROXIMAS; i++)
+        DibujarProximaPieza(FORMAS[proximas[i]], xProx, yProx + i * (ORDEN * config.TAM_CELDA + 5));
+
+    gbt_volcar_backbuffer();
 }
