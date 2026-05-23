@@ -66,6 +66,7 @@ typedef enum {
 #define ORDEN 4
 
 //MACROS
+#define MAX_NOMBRE 3
 #define CANT_TEXTURAS 4
 #define TITULO "Primera Prueba"
 //MACROS TABLERO

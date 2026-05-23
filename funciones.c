@@ -2,6 +2,7 @@
 #include "core.h"
 
 uint8_t PiezaAnterior;
+uint8_t X = COL_TABLERO/2;
 
 void semilla()
 {
@@ -78,14 +79,40 @@ uint8_t (*FORMAS[7])[16] = {
 };
 
 
-void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado) {
 
+
+void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado, matrix* m) {
     pieza->forma = FORMAS[tipoSeleccionado];
-    // Valores iniciales
     pieza->rotacion = 0;
-    pieza->posX = COL_TABLERO/2;
+    pieza->posY = -1; // Arranca en la fila 0 de forma estándar
 
-    pieza->posY = -1;
+    // 1. INTENTAMOS ASIGNAR EL X DONDE SE DEJÓ LA PIEZA ANTERIOR
+    pieza->posX = X;
+
+    // 2. "SPAWN PROTECTION" (AJUSTE DE BORDES AUTOMÁTICO)
+    // Buscamos el bloque más a la derecha ocupado por la estructura de la pieza
+    uint16_t max_ancho_ocupado = 0;
+    for(uint8_t i = 0; i < ORDEN; i++) {
+        for(uint8_t j = 0; j < ORDEN; j++) {
+            if(pieza->forma[0][i * ORDEN + j] != TR) {
+                if(j > max_ancho_ocupado) {
+                    max_ancho_ocupado = j;
+                }
+            }
+        }
+    }
+
+    // Si la posición X más el ancho de la pieza superan el tablero, la empujamos hacia la izquierda
+    if(pieza->posX + max_ancho_ocupado >= COL_TABLERO) {
+        pieza->posX = COL_TABLERO - (max_ancho_ocupado + 1);
+        X = pieza->posX; // Sincronizamos la variable global
+    }
+
+    // Por seguridad, si quedó menor a 0, la clavamos en 0
+    if(pieza->posX < 0) {
+        pieza->posX = 0;
+        X = 0;
+    }
 }
 /*
 int8_t PiezaPuedeRotar(PiezaActiva* p)
@@ -111,11 +138,13 @@ void PiezaMoverAbajo(PiezaActiva* p)
 
 void PiezaMoverIzq(PiezaActiva* p)
 {
+    X--;
     p->posX--;
 }
 void PiezaMoverDer(PiezaActiva* p)
 {
     p->posX++;
+    X++;
 }
 
 void PiezaRotarDerecha(PiezaActiva* p)

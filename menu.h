@@ -11,4 +11,5 @@ int MenuIniciar(TDAconfig config);
 void MenuConfiguracion();
 int MenuGameOver(int puntaje);
 int8_t MenuPausa();
+char* PantallaIngresoNombre();
 #endif // MENU_H_INCLUDED
