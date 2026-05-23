@@ -209,9 +209,9 @@ void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones)
     for(uint8_t op = 0; op<cant_opciones; op++){
         Y += config.ALTO/(cant_opciones*2);
         if(op == opcion)
-            DibujarTextoCentrado(opciones_menu[op],Y,W,0);
+            DibujarTextoCentradoConSombra(opciones_menu[op],Y,W,0,N);
         else
-            DibujarTextoCentrado(opciones_menu[op],Y,S,0);
+            DibujarTextoCentradoConSombra(opciones_menu[op],Y,O,0,N);
     }
     gbt_volcar_backbuffer();
 
@@ -262,12 +262,16 @@ void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char
 
     DibujarTablero(m,0,0);
     DibujarPieza(p);
+    //RECTANGULO DE ESTADISTICAS
     DibujarRectangulo(config.OFFSET_X + (COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
-    DibujarRectangulo(config.OFFSET_X,10,26,2,N,PLANO);
-    DibujarTexto("TETRIS KAMIKAZE",config.OFFSET_X,12,S);
-    DibujarTexto(nombre,config.OFFSET_X*10,12,S);
-    DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y + 7,T,-config.OFFSET_X -5);
-    DibujarPuntaje(puntaje, config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE") + 15, config.OFFSET_Y + 7, T);
+    DibujarPuntaje(puntaje, config.OFFSET_X + (COL_TABLERO + 4) * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE"), config.OFFSET_Y + config.TAM_CELDA/2, T);
+    DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y + config.TAM_CELDA/2,T,-config.OFFSET_X -5);
+    //RECTANGULO TITULO
+    DibujarRectangulo(config.OFFSET_X,config.TAM_CELDA,26,2,N,PLANO);
+    DibujarTextoConSombra("TETRIS KAMIKAZE",config.OFFSET_X,config.TAM_CELDA * 1.5, S,T);
+    DibujarTextoConSombra(nombre,config.OFFSET_X*10,config.TAM_CELDA * 1.5,S,T);
+
+
 
     int xProx = config.OFFSET_X + (COL_TABLERO + 2) * config.TAM_CELDA;
     int yProx = config.OFFSET_Y + config.TAM_CELDA * 3;
@@ -275,4 +279,46 @@ void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char
         DibujarProximaPieza(FORMAS[proximas[i]], xProx, yProx + i * (ORDEN * config.TAM_CELDA + 5));
 
     gbt_volcar_backbuffer();
+}
+
+
+void DibujarTextoEnRecuadro(char* texto, uint16_t centroX, uint16_t centroY, uint8_t colorTexto, uint8_t colorFondo, eTexturas texturaBorde)
+{
+    uint16_t anchoTexto = CalcularAnchoTexto(texto);
+    uint16_t altoTexto = TAM_FUENTE8X8 * config.ESCALA_FUENTE;
+
+
+    uint16_t margenX = config.TAM_CELDA;
+    uint16_t margenY = config.TAM_CELDA / 2;
+
+    uint16_t anchoRecuadro = anchoTexto + (margenX * 2);
+    uint16_t altoRecuadro = altoTexto + (margenY * 2);
+
+    uint16_t celdasAncho = (anchoRecuadro / config.TAM_CELDA) + 1;
+    uint16_t celdasAlto = (altoRecuadro / config.TAM_CELDA) + 1;
+
+    uint16_t posX = centroX - (celdasAncho * config.TAM_CELDA) / 2;
+    uint16_t posY = centroY - (celdasAlto * config.TAM_CELDA) / 2;
+
+    DibujarRectangulo(posX, posY, celdasAncho, celdasAlto, colorFondo, texturaBorde);
+
+    uint16_t textoX = centroX - (anchoTexto / 2);
+    uint16_t textoY = centroY - (altoTexto / 2);
+
+    DibujarTexto(texto, textoX, textoY, colorTexto);
+}
+
+void DibujarTextoConSombra(char* texto, uint16_t X, uint16_t Y, uint8_t color, uint8_t colorSombra)
+{
+    uint16_t offsetSombra = config.ESCALA_FUENTE;
+
+    DibujarTexto(texto, X + offsetSombra, Y + offsetSombra, colorSombra);
+
+    DibujarTexto(texto, X, Y, color);
+}
+
+void DibujarTextoCentradoConSombra(char* texto, uint16_t Y, uint8_t color, uint16_t OFFSET_X, uint8_t colorSombra)
+{
+    uint16_t X = (config.ANCHO - CalcularAnchoTexto(texto))/2 + OFFSET_X;
+    DibujarTextoConSombra(texto,X,Y,color, colorSombra);
 }

@@ -10,7 +10,7 @@ typedef struct{
     uint8_t TAM_CELDA;
     uint16_t OFFSET_X;
     uint16_t OFFSET_Y;
-    uint8_t ESCALA_FUENTE;
+    float ESCALA_FUENTE;
     int DIFICULTAD;
     int PALETA;
 }TDAconfig;
