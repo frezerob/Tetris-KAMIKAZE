@@ -23,7 +23,6 @@ Entrega: No
 
 
 int Jugar(char *nombre);
-uint8_t Gravedad(tGBT_Temporizador *temporizador,matrix *m, PiezaActiva *p, int proximas[], int *puntaje);
 int IniciarSistema(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
@@ -44,6 +43,7 @@ int main(int argc, char* argv[])
             break;
         if(ret == MENU_PRINCIPAL){
             ret = MenuIniciar(config);
+            nombre = PantallaIngresoNombre();
             if(ret == SALIR) break;
             // si ret == 0 (JUGAR) vuelve a Jugar()
         }
@@ -118,7 +118,7 @@ int Jugar(char *nombre)
     for(int i = 0; i < CANT_PROXIMAS; i++)
         proximas[i] = generarPiezaAleatoria();
 
-    tipoPieza(&p, proximas[0],&m);
+    tipoPieza(&p, proximas[0], &m);
     for(int i = 0; i < CANT_PROXIMAS - 1; i++)
         proximas[i] = proximas[i+1];
     proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
@@ -129,10 +129,16 @@ int Jugar(char *nombre)
     uint8_t corriendo = 1;
     uint8_t fijada = 0;
     int gameOver = 0;
-    eGBT_Tecla tecla;
 
+    // INICIALIZACIÓN DE TEMPORIZADORES (Siempre dividiendo por 1000.0 para pasar a segundos)
     tGBT_Temporizador* temporizador = gbt_temporizador_crear(velActual / 1000.0);
-    if(!temporizador){
+    tGBT_Temporizador* tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+
+    // Variables de retraso de fijación
+    uint8_t estaEnSuperficie = 0;
+    uint8_t sigueApoyada = 0;
+
+    if(!temporizador || !tempoRetraso){
         printf("%s", gbt_obtener_log());
         return INIT_ERR;
     }
@@ -140,23 +146,23 @@ int Jugar(char *nombre)
     while(corriendo)
     {
         fijada = 0;
-        gbt_procesar_entrada();
-        tecla = gbt_obtener_tecla_presionada();
+        gbt_procesar_entrada(); // Actualiza la cola de eventos de teclado de GBT
 
-        if(tecla == GBTK_ESCAPE){
+        // CONTROL DE SALIDA/PAUSA
+        if(gbt_tecla_presionada(GBTK_ESCAPE)){
             int8_t opcion = MenuPausa();
             if(opcion == SALIR)
                 break;
         }
-        // GRAVEDAD POR TIEMPO
-        if(gbt_temporizador_consumir(temporizador)){
-            PiezaMoverAbajo(&p);
-            if(PiezaDetectarColision(&p, &m)){
-                PiezaMoverArriba(&p);
+
+        // BLOQUE 1: PROCESAMIENTO DEL LOCK DELAY (Si expiró el tiempo, se consolida)
+        if(estaEnSuperficie){
+            if(gbt_temporizador_consumir(tempoRetraso)){
                 PiezaVolcar(&m, &p);
                 puntaje += EliminarFilasCompletasConPuntaje(&m);
 
-                tipoPieza(&p, proximas[0],&m);
+                // Spawn de la siguiente pieza
+                tipoPieza(&p, proximas[0], &m);
                 for(int i = 0; i < CANT_PROXIMAS - 1; i++)
                     proximas[i] = proximas[i+1];
                 proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
@@ -173,35 +179,98 @@ int Jugar(char *nombre)
                     temporizador = gbt_temporizador_crear(velActual / 1000.0);
                 }
 
-                fijada = 1;
+                estaEnSuperficie = 0;
+                fijada = 1; // Evita que la nueva pieza sufra caídas o movimientos en este ciclo
             }
         }
 
-        // TECLAS
+        // BLOQUE 2: GRAVEDAD POR TIEMPO (Solo detecta la superficie y activa el Lock Delay)
+        if(!fijada && gbt_temporizador_consumir(temporizador)){
+            PiezaMoverAbajo(&p);
+            if(PiezaDetectarColision(&p, &m)){
+                PiezaMoverArriba(&p); // Deshacer movimiento inválido
+
+                if(!estaEnSuperficie){
+                    estaEnSuperficie = 1;
+                    // Resetear el reloj de gracia recreándolo
+                    gbt_temporizador_destruir(tempoRetraso);
+                    tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+                }
+            } else {
+                // Si la pieza pudo bajar con éxito, ya no está en una superficie
+                estaEnSuperficie = 0;
+            }
+        }
+
+        // BLOQUE 3: CONTROL DE ENTRADAS DEL JUGADOR
         if(!fijada){
-            if(tecla == GBTK_a){
+            // MOVER IZQUIERDA (Tecla A)
+            if(gbt_tecla_presionada(GBTK_a)){
                 PiezaMoverIzq(&p);
-                if(PiezaDetectarColision(&p, &m))
+                if(PiezaDetectarColision(&p, &m)) {
                     PiezaMoverDer(&p);
+                } else {
+                    // Verificación fantasma de superficie
+                    PiezaMoverAbajo(&p);
+                    sigueApoyada = PiezaDetectarColision(&p, &m);
+                    PiezaMoverArriba(&p);
+
+                    if(sigueApoyada && estaEnSuperficie){
+                        gbt_temporizador_destruir(tempoRetraso);
+                        tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+                    } else if (!sigueApoyada) {
+                        estaEnSuperficie = 0;
+                    }
+                }
             }
-            if(tecla == GBTK_d){
+
+            // MOVER DERECHA (Tecla D)
+            if(gbt_tecla_presionada(GBTK_d)){
                 PiezaMoverDer(&p);
-                if(PiezaDetectarColision(&p, &m))
+                if(PiezaDetectarColision(&p, &m)) {
                     PiezaMoverIzq(&p);
+                } else {
+                    // Verificación fantasma de superficie
+
+
+                    if(sigueApoyada && estaEnSuperficie){
+                        gbt_temporizador_destruir(tempoRetraso);
+                        tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+                    } else if (!sigueApoyada) {
+                        estaEnSuperficie = 0;
+                    }
+                }
             }
-            if(tecla == GBTK_w){
+
+            // ROTAR PIEZA (Tecla W)
+            if(gbt_tecla_presionada(GBTK_w)){
                 PiezaRotarDerecha(&p);
-                if(PiezaDetectarColision(&p, &m))
+                if(PiezaDetectarColision(&p, &m)) {
                     PiezaRotarIzquierda(&p);
+                } else {
+                    // Verificación fantasma post-rotación
+                    PiezaMoverAbajo(&p);
+                    sigueApoyada = PiezaDetectarColision(&p, &m);
+                    PiezaMoverArriba(&p);
+
+                    if(sigueApoyada && estaEnSuperficie){
+                        gbt_temporizador_destruir(tempoRetraso);
+                        tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+                    }
+                }
             }
-            if(tecla == GBTK_s){
+
+            if(gbt_tecla_presionada(GBTK_s)){
                 PiezaMoverAbajo(&p);
                 if(PiezaDetectarColision(&p, &m)){
                     PiezaMoverArriba(&p);
+
+                    // Volcado instantáneo por empuje manual
                     PiezaVolcar(&m, &p);
+                    estaEnSuperficie = 0;
                     puntaje += EliminarFilasCompletasConPuntaje(&m);
 
-                    tipoPieza(&p, proximas[0],&m);
+                    tipoPieza(&p, proximas[0], &m);
                     for(uint8_t i = 0; i < CANT_PROXIMAS - 1; i++)
                         proximas[i] = proximas[i+1];
                     proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
@@ -218,18 +287,17 @@ int Jugar(char *nombre)
                         temporizador = gbt_temporizador_crear(velActual / 1000.0);
                     }
                 }
-                else
+                else {
                     puntaje++;
+                }
             }
         }
 
-        RenderizarJuego(&p,&m,puntaje,proximas,nombre);
-
-
-
+        RenderizarJuego(&p, &m, puntaje, proximas, nombre);
     }
 
     gbt_temporizador_destruir(temporizador);
+    gbt_temporizador_destruir(tempoRetraso);
 
     if(gameOver)
         return MenuGameOver(puntaje);

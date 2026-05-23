@@ -159,7 +159,7 @@ int8_t PiezaDetectarColision(PiezaActiva* p, matrix* m)
 {
     for(uint8_t i = 0; i < ORDEN; i++){
         for(uint8_t j = 0; j < ORDEN; j++){
-            if(p->forma[p->rotacion][i*4+j] == TR) continue;
+            if(p->forma[p->rotacion][i*ORDEN+j] == TR) continue;
 
             int fila = p->posY + i;
             int col  = p->posX + j;
