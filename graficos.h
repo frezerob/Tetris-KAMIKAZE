@@ -19,5 +19,5 @@ void DibujarFondo();
 void DibujarRectangulo(uint16_t X, uint16_t Y, uint16_t ancho_celdas, uint16_t alto_celdas, uint8_t color, eTexturas textura);
 void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones);
 
-void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[]);
+void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[], char*nombre);
 #endif // GRAFICOS_H_INCLUDED

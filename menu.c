@@ -166,3 +166,40 @@ int8_t MenuPausa()
     }
 }
 
+char* PantallaIngresoNombre()
+{
+    char *nombre = malloc(sizeof(char) * (MAX_NOMBRE + 1));
+    uint8_t CantidadChar = 0;
+    eGBT_Tecla tecla;
+    while(TRUE)
+    {
+        gbt_procesar_entrada();
+        tecla = gbt_obtener_tecla_presionada();
+
+        if(tecla >= GBTK_a && tecla <= GBTK_z && CantidadChar < 3)
+        {
+            // Si GBTK_a equivale a la 'A' o 'a' física, calculamos el desplazamiento:
+            char caracter = (char)tecla - 32;
+
+            nombre[CantidadChar] = caracter;
+            CantidadChar++;
+            nombre[CantidadChar] = '\0'; // Aseguramos siempre el fin de string
+        }
+        else if(tecla == GBTK_RETROCESO){
+            if(CantidadChar > 0){
+                CantidadChar--;
+                nombre[CantidadChar] = '\0';
+            }
+        }
+
+        if(tecla == GBTK_ENTER && CantidadChar==(MAX_NOMBRE))
+            return nombre;
+
+        gbt_borrar_backbuffer(N);
+        DibujarFondo();
+        DibujarTextoCentrado("INGRESE SU NOMBRE",config.OFFSET_Y*2,O,0);
+        DibujarTextoCentrado(nombre,config.OFFSET_Y*3,O,0);
+        gbt_volcar_backbuffer();
+    }
+
+}

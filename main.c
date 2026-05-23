@@ -22,7 +22,8 @@ Entrega: No
 #include "config.h"
 
 
-int Jugar();
+int Jugar(char *nombre);
+uint8_t Gravedad(tGBT_Temporizador *temporizador,matrix *m, PiezaActiva *p, int proximas[], int *puntaje);
 int IniciarSistema(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
@@ -34,8 +35,10 @@ int main(int argc, char* argv[])
     int ret = MenuIniciar(config);
     if(ret == SALIR) return 0;
 
+    char* nombre = PantallaIngresoNombre();
+
     while(1){
-        ret = Jugar();
+        ret = Jugar(nombre);
 
         if(ret == SALIR)
             break;
@@ -103,7 +106,7 @@ int IniciarSistema(int argc, char* argv[])
 }
 
 
-int Jugar()
+int Jugar(char *nombre)
 {
     matrix m;
     PiezaActiva p;
@@ -115,7 +118,7 @@ int Jugar()
     for(int i = 0; i < CANT_PROXIMAS; i++)
         proximas[i] = generarPiezaAleatoria();
 
-    tipoPieza(&p, proximas[0]);
+    tipoPieza(&p, proximas[0],&m);
     for(int i = 0; i < CANT_PROXIMAS - 1; i++)
         proximas[i] = proximas[i+1];
     proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
@@ -123,8 +126,8 @@ int Jugar()
     uint16_t velActual = VelocidadSegunDificultad(config.DIFICULTAD);
     int piezasCaidas = 0;
     int puntaje = 0;
-    int corriendo = 1;
-    int fijada = 0;
+    uint8_t corriendo = 1;
+    uint8_t fijada = 0;
     int gameOver = 0;
     eGBT_Tecla tecla;
 
@@ -153,14 +156,14 @@ int Jugar()
                 PiezaVolcar(&m, &p);
                 puntaje += EliminarFilasCompletasConPuntaje(&m);
 
-                tipoPieza(&p, proximas[0]);
+                tipoPieza(&p, proximas[0],&m);
                 for(int i = 0; i < CANT_PROXIMAS - 1; i++)
                     proximas[i] = proximas[i+1];
                 proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
 
                 if(PiezaDetectarColision(&p, &m)){
-                    corriendo = 0;
                     gameOver = 1;
+                    break;
                 }
 
                 piezasCaidas++;
@@ -198,8 +201,8 @@ int Jugar()
                     PiezaVolcar(&m, &p);
                     puntaje += EliminarFilasCompletasConPuntaje(&m);
 
-                    tipoPieza(&p, proximas[0]);
-                    for(int i = 0; i < CANT_PROXIMAS - 1; i++)
+                    tipoPieza(&p, proximas[0],&m);
+                    for(uint8_t i = 0; i < CANT_PROXIMAS - 1; i++)
                         proximas[i] = proximas[i+1];
                     proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
 
@@ -220,7 +223,7 @@ int Jugar()
             }
         }
 
-        RenderizarJuego(&p,&m,puntaje,proximas);
+        RenderizarJuego(&p,&m,puntaje,proximas,nombre);
 
 
 

@@ -255,7 +255,7 @@ void DibujarRectangulo(uint16_t X, uint16_t Y, uint16_t ancho_celdas, uint16_t a
 }
 
 
-void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[])
+void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char* nombre)
 {
     gbt_borrar_backbuffer(N);
     DibujarFondo();
@@ -265,6 +265,7 @@ void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[])
     DibujarRectangulo(config.OFFSET_X + (COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
     DibujarRectangulo(config.OFFSET_X,10,26,2,N,PLANO);
     DibujarTexto("TETRIS KAMIKAZE",config.OFFSET_X,12,S);
+    DibujarTexto(nombre,config.OFFSET_X*10,12,S);
     DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y + 7,T,-config.OFFSET_X -5);
     DibujarPuntaje(puntaje, config.OFFSET_X + COL_TABLERO * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE") + 15, config.OFFSET_Y + 7, T);
 
