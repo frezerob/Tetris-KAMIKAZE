@@ -11,5 +11,6 @@ int MenuIniciar(TDAconfig config);
 void MenuConfiguracion();
 int MenuGameOver(int puntaje);
 int8_t MenuPausa();
+void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opciones);
 char* PantallaIngresoNombre();
 #endif // MENU_H_INCLUDED

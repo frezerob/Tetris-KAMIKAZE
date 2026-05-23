@@ -63,6 +63,8 @@ typedef enum {
     BORDE,
     FONDO
 } eTexturas;
+
+
 #define ORDEN 4
 
 //MACROS

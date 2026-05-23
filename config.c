@@ -7,15 +7,10 @@ TDAconfig config;
 
 void ConfigAplicarResolucion()
 {
-    if(config.ANCHO == 320 && config.ALTO == 200){
-        config.ESCALA = 3;
-        config.TAM_CELDA = 8;
-        config.ESCALA_FUENTE = 1;
-    }
+    if(config.ANCHO == 320 && config.ALTO == 200)
+        AplicarConfig(320);
     else if(config.ANCHO == 640 && config.ALTO == 480){
-        config.ESCALA = 1;
-        config.TAM_CELDA = 20;
-        config.ESCALA_FUENTE = 3;
+        AplicarConfig(640);
     }
 }
 
@@ -24,11 +19,7 @@ int ConfigCargar(char* archivo)
     FILE* f = fopen(archivo, "r");
     if(!f){
         // No existe, creamos con valores por defecto
-        config.ANCHO = 320;
-        config.ALTO  = 200;
-        config.DIFICULTAD = 1;  // NORMAL
-        config.PALETA = 0;
-        ConfigAplicarResolucion();
+        AplicarConfig(320);
         ConfigGuardar(archivo);
         return 0;
     }
@@ -51,7 +42,7 @@ int ConfigCargar(char* archivo)
     }
 
     fclose(f);
-    ConfigAplicarResolucion();
+    AplicarConfig(config.ANCHO);
     return 0;
 }
 
@@ -68,4 +59,21 @@ int ConfigGuardar(char* archivo)
 
     fclose(f);
     return 0;
+}
+
+void AplicarConfig(uint16_t res){
+    if(res == 640){
+        config.ANCHO = 640;
+        config.ALTO = 480;
+        config.ESCALA = 1.5;
+        config.TAM_CELDA = 16;
+        config.ESCALA_FUENTE = 2;
+    }
+    else{
+        config.ANCHO = 320;
+        config.ALTO = 200;
+        config.ESCALA = 2;
+        config.TAM_CELDA = 8;
+        config.ESCALA_FUENTE = 1;
+    }
 }

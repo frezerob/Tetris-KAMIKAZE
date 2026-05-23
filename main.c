@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
         }
         // si ret == REINICIAR vuelve directo a Jugar()
     }
-
+    free(nombre);
     gbt_destruir_ventana();
     return 0;
 }
