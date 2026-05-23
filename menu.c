@@ -55,7 +55,7 @@ void MenuConfiguracion()
         // Mostramos la opcion seleccionada actualmente en cada fila
         char lineaDif[32], lineaRes[32];
         sprintf(lineaDif, "DIFICULTAD %s", difs[config.DIFICULTAD]);
-        sprintf(lineaRes, "RESOLUCION %s", ress[config.ANCHO == 320 ? 1 : 0]);
+        sprintf(lineaRes, "RESOLUCION %s", ress[config.ANCHO == 640 ? 0 : 1]);
 
         char* opcMostrar[] = {lineaDif, lineaRes, "VOLVER"};
         ImprimirMenu(opcion, opcMostrar, cant);
@@ -196,9 +196,11 @@ char* PantallaIngresoNombre()
 
         gbt_borrar_backbuffer(N);
         DibujarFondo();
-        DibujarTextoCentrado("INGRESE SU NOMBRE",config.OFFSET_Y*2,O,0);
-        DibujarTextoCentrado(nombre,config.OFFSET_Y*3,O,0);
+        DibujarTextoCentradoConSombra("INGRESE SU NOMBRE",config.OFFSET_Y*2,O,0,N);
+        DibujarTextoCentradoConSombra(nombre,config.OFFSET_Y*3,O,0,N);
         gbt_volcar_backbuffer();
+
+        //Espera para no sobrecargar CPU
         gbt_esperar(16);
     }
 

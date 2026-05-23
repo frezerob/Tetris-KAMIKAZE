@@ -125,7 +125,7 @@ int Jugar(char *nombre)
 
     uint16_t velActual = VelocidadSegunDificultad(config.DIFICULTAD);
     int piezasCaidas = 0;
-    int puntaje = 0;
+    int puntaje =  0;
     uint8_t corriendo = 1;
     uint8_t fijada = 0;
     int gameOver = 0;
