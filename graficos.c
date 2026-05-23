@@ -23,7 +23,7 @@ void DibujarPieza(PiezaActiva* p)
 {
     for(uint8_t i = 0; i < ORDEN; i++){
         for(uint8_t j = 0; j < ORDEN; j++){
-            if(p->forma[p->rotacion][i*ORDEN+j] != TR)
+            if(p->forma[p->rotacion][i*ORDEN+j] != TR && (p->posY+i) >=0)
                 DibujarCelda(config.OFFSET_X + (p->posX + j ) * config.TAM_CELDA,  // offset solo acá
                                   config.OFFSET_Y + (p->posY + i)  * config.TAM_CELDA,
                                   p->forma[p->rotacion][i * ORDEN + j],
