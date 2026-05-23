@@ -81,12 +81,12 @@ const uint8_t texturas[CANT_TEXTURAS][8][8] =
 
 void DibujarFondo()
 {
-    const uint8_t ANCHO_CELDAS = config.ANCHO / config.TAM_CELDA;
-    const uint8_t ALTO_CELDAS = config.ALTO / config.TAM_CELDA;
+    const uint16_t ANCHO_CELDAS = config.ANCHO / config.TAM_CELDA;
+    const uint16_t ALTO_CELDAS = config.ALTO / config.TAM_CELDA;
     for(uint8_t f = 0; f < ALTO_CELDAS; f++){
-        for(uint8_t c = 0; c < ANCHO_CELDAS; c++){
-            uint16_t X = config.TAM_CELDA * c;
-            uint16_t Y = config.TAM_CELDA * f;
+        for(uint16_t c = 0; c < ANCHO_CELDAS; c++){
+            uint16_t X = (uint16_t)config.TAM_CELDA * c;
+            uint16_t Y = (uint16_t)config.TAM_CELDA * f;
             DibujarCelda(X,Y,0,config.TAM_CELDA,BORDE);
         }
     }
@@ -175,7 +175,7 @@ void DibujarCaracter(char c, uint16_t X, uint16_t Y,uint8_t color)
 {
     if(c >= 'A' && c<='Z')
         DibujarLetra(c,X,Y,color);
-    else if(c>='0' || c<='9')
+    else if(c>='0' && c<='9')
         DibujarNumero(c,X,Y,color);
 }
 

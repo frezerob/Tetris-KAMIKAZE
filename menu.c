@@ -5,23 +5,28 @@
 #include <string.h>
 
 
+void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opciones)
+{
+    *tecla = gbt_obtener_tecla_presionada();
+    if(*tecla == GBTK_w)
+        *opcion = (*opcion + cantidad_opciones - 1) % cantidad_opciones;
+    if(*tecla == GBTK_s)
+        *opcion = (*opcion + 1) % cantidad_opciones;
+}
+
 int MenuIniciar(TDAconfig cfg)
 {
     char* opciones_menu[] = {"JUGAR", "CONFIGURACION", "SALIR"};
-    int cant = 3;
-    int opcion = 0;
+    uint8_t cant = 3;
+    uint8_t opcion = 0;
     eGBT_Tecla tecla;
 
     while(1){
         ImprimirMenu(opcion, opciones_menu, cant);
 
         gbt_procesar_entrada();
-        tecla = gbt_obtener_tecla_presionada();
 
-        if(tecla == GBTK_w)
-            opcion = (opcion + cant - 1) % cant;
-        if(tecla == GBTK_s)
-            opcion = (opcion + 1) % cant;
+        CalcularOpcion(&tecla,&opcion,cant);
 
         if(tecla == GBTK_ENTER){
             if(opcion == 0) return 0;
@@ -39,9 +44,9 @@ int MenuIniciar(TDAconfig cfg)
 void MenuConfiguracion()
 {
     // char* opcMenu[] = {"DIFICULTAD", "RESOLUCION", "VOLVER"}; ???
-    int cant = 3;
-    int opcion = 0;
-    int corriendo = 1;
+    uint8_t cant = 3;
+    uint8_t opcion = 0;
+    uint8_t corriendo = 1;
     eGBT_Tecla tecla;
     char* difs[] = {"FACIL", "NORMAL", "DIFICIL"};
     char* ress[] = {"320X200", "640X480"};
@@ -50,19 +55,17 @@ void MenuConfiguracion()
         // Mostramos la opcion seleccionada actualmente en cada fila
         char lineaDif[32], lineaRes[32];
         sprintf(lineaDif, "DIFICULTAD %s", difs[config.DIFICULTAD]);
-        sprintf(lineaRes, "RESOLUCION %s", ress[config.ANCHO == 320 ? 0 : 1]);
+        sprintf(lineaRes, "RESOLUCION %s", ress[config.ANCHO == 320 ? 1 : 0]);
 
         char* opcMostrar[] = {lineaDif, lineaRes, "VOLVER"};
         ImprimirMenu(opcion, opcMostrar, cant);
 
         gbt_procesar_entrada();
-        tecla = gbt_obtener_tecla_presionada();
 
-        if(tecla == GBTK_s || tecla == GBTK_ABAJO)
-            opcion = (opcion + 1) % cant;
-        if(tecla == GBTK_w || tecla == GBTK_ARRIBA)
-            opcion = (opcion + cant - 1) % cant;
+        CalcularOpcion(&tecla, &opcion, cant);
 
+
+        // Opcion de cambio de resolucion
         if(tecla == GBTK_ENTER){
             if(opcion == 0){
                 config.DIFICULTAD = (config.DIFICULTAD + 1) % 3;
@@ -70,41 +73,32 @@ void MenuConfiguracion()
             }
             else if(opcion == 1){
                 if(config.ANCHO == 320){
-                    config.ANCHO = 640;
-                    config.ALTO  = 480;
-                    config.TAM_CELDA = 20;
+                    AplicarConfig(640);
                 }
-                else{
-                    config.TAM_CELDA = 8;
-                    config.ANCHO = 320;
-                    config.ALTO  = 200;
+                else if (config.ANCHO == 640){
+                    AplicarConfig(320);
                 }
                 config.OFFSET_X = 2 * config.TAM_CELDA;
                 config.OFFSET_Y = 4 * config.TAM_CELDA;
 
 
-                ConfigAplicarResolucion();
                 ConfigGuardar(CONFIG_FILE);
 
                 gbt_destruir_ventana();
                 gbt_crear_ventana(TITULO, config.ANCHO, config.ALTO, config.ESCALA);
             }
             else if(opcion == 2)
-                corriendo = 0;
+                break;
+
         }
         if(tecla == GBTK_ESCAPE)
             corriendo = 0;
+
+        gbt_esperar(16);
     }
 }
 
-void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opciones)
-{
-    *tecla = gbt_obtener_tecla_presionada();
-    if(*tecla == GBTK_w)
-        *opcion = (*opcion + cantidad_opciones - 1) % cantidad_opciones;
-    if(*tecla == GBTK_s)
-        *opcion = (*opcion + 1) % cantidad_opciones;
-}
+
 
 int MenuGameOver(int puntaje)
 {
@@ -153,22 +147,27 @@ int8_t MenuPausa()
     uint8_t opcion = 0;
     while(1)
     {
-        gbt_procesar_entrada();
+
         char *opciones[] = {"REANUDAR", "SALIR"};
         ImprimirMenu(opcion,opciones,2);
-        tecla = gbt_obtener_tecla_presionada();
+
+
+        gbt_procesar_entrada();
         CalcularOpcion(&tecla,&opcion,2);
+
+
         if(tecla == GBTK_ENTER)
             switch(opcion){
                 case 0: return REANUDAR; break;
                 case 1: return SALIR; break;
             }
+        gbt_esperar(16);
     }
 }
 
 char* PantallaIngresoNombre()
 {
-    char *nombre = malloc(sizeof(char) * (MAX_NOMBRE + 1));
+    char *nombre = calloc(4, sizeof(char));
     uint8_t CantidadChar = 0;
     eGBT_Tecla tecla;
     while(TRUE)
@@ -192,7 +191,7 @@ char* PantallaIngresoNombre()
             }
         }
 
-        if(tecla == GBTK_ENTER && CantidadChar==(MAX_NOMBRE))
+        if(tecla == GBTK_ENTER && CantidadChar==MAX_NOMBRE)
             return nombre;
 
         gbt_borrar_backbuffer(N);
@@ -200,6 +199,7 @@ char* PantallaIngresoNombre()
         DibujarTextoCentrado("INGRESE SU NOMBRE",config.OFFSET_Y*2,O,0);
         DibujarTextoCentrado(nombre,config.OFFSET_Y*3,O,0);
         gbt_volcar_backbuffer();
+        gbt_esperar(16);
     }
 
 }

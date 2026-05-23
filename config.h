@@ -6,7 +6,7 @@
 typedef struct{
     uint16_t ANCHO;
     uint16_t ALTO;
-    uint8_t ESCALA;
+    float ESCALA;
     uint8_t TAM_CELDA;
     uint16_t OFFSET_X;
     uint16_t OFFSET_Y;
@@ -20,5 +20,8 @@ extern TDAconfig config;
 int ConfigCargar(char* archivo);
 int ConfigGuardar(char* archivo);
 void ConfigAplicarResolucion();
+
+void AplicarConfig(uint16_t res);
+
 
 #endif // CONFIG_H_INCLUDED
