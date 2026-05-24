@@ -2,6 +2,7 @@
 #include "menu.h"
 #include "graficos.h"
 #include "score.h"
+#include "partida.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -17,25 +18,26 @@ void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opcione
 
 int MenuIniciar(TDAconfig cfg)
 {
-    char* opciones_menu[] = {"JUGAR","ESTADISTICAS","CONFIGURACION", "SALIR"};
-    uint8_t cant = 4;
+    int hayPartida = PartidaExiste();
+    char* sinPartida[] = {"JUGAR", "ESTADISTICAS", "CONFIGURACION", "SALIR"};
+    char* conPartida[] = {"JUGAR", "CONTINUAR", "ESTADISTICAS", "CONFIGURACION", "SALIR"};
+    char** opciones = hayPartida ? conPartida : sinPartida;
+    uint8_t cant = hayPartida ? 5 : 4;
     uint8_t opcion = 0;
     eGBT_Tecla tecla;
 
     while(1){
-        ImprimirMenu(opcion, opciones_menu, cant);
-
+        ImprimirMenu(opcion, opciones, cant);
         gbt_procesar_entrada();
-
-        CalcularOpcion(&tecla,&opcion,cant);
+        CalcularOpcion(&tecla, &opcion, cant);
 
         if(tecla == GBTK_ENTER){
             if(opcion == 0) return 0;
-            if(opcion == 1) MenuEstadisticas();
-            if(opcion == 2) MenuConfiguracion();
-            if(opcion == 3) return SALIR;
+            if(hayPartida && opcion == 1) return CONTINUAR;
+            if(opcion == (hayPartida ? 2 : 1)) MenuEstadisticas();
+            if(opcion == (hayPartida ? 3 : 2)) MenuConfiguracion();
+            if(opcion == (hayPartida ? 4 : 3)) return SALIR;
         }
-
         if(tecla == GBTK_ESCAPE)
             return SALIR;
 
@@ -45,7 +47,7 @@ int MenuIniciar(TDAconfig cfg)
 
 void MenuConfiguracion()
 {
-    uint8_t cant = 5;
+    uint8_t cant = 6;
     uint8_t opcion = 0;
     uint8_t corriendo = 1;
     char lineaPaleta[32];
@@ -62,7 +64,7 @@ void MenuConfiguracion()
         sprintf(modoJuego, "MODO DE JUEGO %s",modos[config.MODO]);
         sprintf(colTablero,"CANTIDAD DE COLUMNAS %d",config.COL_TABLERO);
         char* opcMostrar[] = {lineaDif, lineaRes, modoJuego, colTablero, lineaPaleta, "VOLVER"};
-        uint8_t cant = 6;
+
 
         gbt_procesar_entrada();
         CalcularOpcion(&tecla, &opcion, cant);
@@ -155,22 +157,21 @@ int8_t MenuPausa()
 {
     eGBT_Tecla tecla;
     uint8_t opcion = 0;
-    while(1)
-    {
+    char* opciones[] = {"REANUDAR", "GUARDAR Y SALIR", "SALIR SIN GUARDAR"};
 
-        char *opciones[] = {"REANUDAR", "SALIR"};
-        ImprimirMenu(opcion,opciones,2);
-
-
+    while(1){
+        ImprimirMenu(opcion, opciones, 3);
         gbt_procesar_entrada();
-        CalcularOpcion(&tecla,&opcion,2);
+        CalcularOpcion(&tecla, &opcion, 3);
 
+        if(tecla == GBTK_ENTER){
+            if(opcion == 0) return REANUDAR;
+            if(opcion == 1) return GUARDAR_Y_SALIR;
+            if(opcion == 2) return SALIR;
+        }
+        if(tecla == GBTK_ESCAPE)
+            return REANUDAR;
 
-        if(tecla == GBTK_ENTER)
-            switch(opcion){
-                case 0: return REANUDAR; break;
-                case 1: return SALIR; break;
-            }
         gbt_esperar(16);
     }
 }

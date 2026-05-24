@@ -6,6 +6,8 @@
 #define REINICIAR       1
 #define MENU_PRINCIPAL  2
 #define REANUDAR 3
+#define GUARDAR_Y_SALIR 4
+#define CONTINUAR       5
 
 int MenuIniciar(TDAconfig config);
 void MenuConfiguracion();
