@@ -1,6 +1,7 @@
 #include "core.h"
 #include "menu.h"
 #include "graficos.h"
+#include "score.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -16,8 +17,8 @@ void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opcione
 
 int MenuIniciar(TDAconfig cfg)
 {
-    char* opciones_menu[] = {"JUGAR", "CONFIGURACION", "SALIR"};
-    uint8_t cant = 3;
+    char* opciones_menu[] = {"JUGAR","ESTADISTICAS","CONFIGURACION", "SALIR"};
+    uint8_t cant = 4;
     uint8_t opcion = 0;
     eGBT_Tecla tecla;
 
@@ -30,8 +31,9 @@ int MenuIniciar(TDAconfig cfg)
 
         if(tecla == GBTK_ENTER){
             if(opcion == 0) return 0;
-            if(opcion == 1) MenuConfiguracion();
-            if(opcion == 2) return SALIR;
+            if(opcion == 1) MenuEstadisticas();
+            if(opcion == 2) MenuConfiguracion();
+            if(opcion == 3) return SALIR;
         }
 
         if(tecla == GBTK_ESCAPE)
@@ -216,4 +218,46 @@ char* PantallaIngresoNombre()
         gbt_esperar(16);
     }
 
+}
+
+void MenuEstadisticas()
+{
+    Score scores[MAX_SCORES];
+    int cant = 0;
+    ScoresCargar(scores, &cant);
+
+    eGBT_Tecla tecla;
+    char linea[32];
+    int espaciado = TAM_FUENTE8X8 * config.ESCALA_FUENTE + 4;
+
+    while(1){
+        gbt_borrar_backbuffer(N);
+        DibujarFondo();
+
+        DibujarTextoCentradoConSombra("TOP 10", config.OFFSET_Y, O, 0, N);
+
+        for(int i = 0; i < cant; i++){
+            sprintf(linea, "%d %s %d", i + 1, scores[i].nombre, scores[i].puntaje);
+            int Y = config.OFFSET_Y + espaciado * 2 + i * espaciado;
+            if(i == 0)
+                DibujarTextoCentradoConSombra(linea, Y, O, 0, N);
+            else
+                DibujarTextoCentradoConSombra(linea, Y, W, 0, N);
+        }
+
+        if(cant == 0)
+            DibujarTextoCentradoConSombra("SIN REGISTROS", config.ALTO / 2, W, 0, N);
+
+        DibujarTextoCentradoConSombra("ENTER PARA VOLVER", config.ALTO - espaciado * 2, BRD, 0, N);
+
+        gbt_volcar_backbuffer();
+
+        gbt_procesar_entrada();
+        tecla = gbt_obtener_tecla_presionada();
+
+        if(tecla == GBTK_ENTER || tecla == GBTK_ESCAPE)
+            break;
+
+        gbt_esperar(16);
+    }
 }

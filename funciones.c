@@ -83,30 +83,29 @@ uint8_t PIEZA_X[4][16] = {
     {TR,Z,TR,TR, TR,TR,TR,TR, TR,TR,TR,TR, TR,TR,TR,TR}
 };
 
-uint8_t PIEZA_C[4][16] = {
-    {Z,Z,Z,TR, Z,TR,TR,TR, Z,Z,Z,TR, TR,TR,TR,TR},
-    {Z,Z,Z,TR, Z,TR,Z,TR, Z,TR,Z,TR, TR,TR,TR,TR},
-    {Z,Z,Z,TR, TR,TR,Z,TR, Z,Z,Z,TR, TR,TR,TR,TR},
-    {Z,TR,Z,TR, Z,TR,Z,TR, Z,Z,Z,TR, TR,TR,TR,TR}
-};
-
 uint8_t PIEZA_P[4][16] = {
-    {Z,Z,Z,TR, Z,TR,Z,TR, Z,Z,Z,TR, Z,TR,TR,TR},
-    {Z,Z,Z,Z, TR,Z,TR,Z, TR,Z,Z,Z, TR,TR,TR,TR},
-    {TR,TR,TR,Z, TR,Z,Z,Z, TR,Z,TR,Z, TR,Z,Z,Z},
-    {TR,TR,TR,TR, Z,Z,Z,TR, Z,TR,Z,TR, Z,Z,Z,Z}
+    {Z,Z,TR,TR, Z,Z,TR,TR, Z,TR,TR,TR, TR,TR,TR,TR},
+    {TR,Z,Z,Z, TR,TR,Z,Z, TR,TR,TR,TR, TR,TR,TR,TR},
+    {TR,TR,TR,TR, TR,TR,TR,Z, TR,TR,Z,Z, TR,TR,Z,Z},
+    {TR,Z,TR,TR, Z,Z,TR,TR, Z,Z,TR,TR, TR,TR,TR,TR}
 };
 
-uint8_t PIEZA_F[4][16] = {
-    {Z,Z,Z,TR, Z,TR,TR,TR, Z,Z,TR,TR, Z,TR,TR,TR},
-    {Z,Z,Z,Z, TR,Z,TR,Z, TR,TR,TR,Z, TR,TR,TR,TR},
-    {TR,TR,TR,Z, TR,TR,Z,Z, TR,TR,TR,Z, TR,Z,Z,Z},
-    {TR,TR,TR,TR, Z,TR,TR,TR, Z,TR,Z,TR, Z,Z,Z,Z}
+uint8_t PIEZA_C[4][16] = {
+    {Z,Z,TR,TR, Z,TR,TR,TR, Z,Z,TR,TR, TR,TR,TR,TR},
+    {Z,Z,Z,TR, Z,TR,Z,TR, TR,TR,TR,TR, TR,TR,TR,TR},
+    {Z,Z,TR,TR, TR,Z,TR,TR, Z,Z,TR,TR, TR,TR,TR,TR},
+    {Z,TR,Z,TR, Z,Z,Z,TR, TR,TR,TR,TR, TR,TR,TR,TR}
 };
 
+uint8_t PIEZA_H[4][16] = {
+    {O,TR,O,TR, O,O,O,TR, O,TR,O,TR, TR,TR,TR,TR},  // XXX / X.. / XX. / X..
+    {O,O,O,TR, TR,O,TR,TR, O,O,O,TR, TR,TR,TR,TR}, // XX. / .X. / XX. / ...
+    {O,TR,O,TR, O,O,O,TR, O,TR,O,TR, TR,TR,TR,TR},  // .XX / ..X / XX. / .X.
+    {O,O,O,TR, TR,O,TR,TR, O,O,O,TR, TR,TR,TR,TR},  // ... / XX. / .X. / XX.
+};
 
 uint8_t (*FORMAS[11])[16] = {
-    PIEZA_I, PIEZA_J, PIEZA_L, PIEZA_O, PIEZA_S, PIEZA_T, PIEZA_Z, PIEZA_X, PIEZA_C, PIEZA_P, PIEZA_F
+    PIEZA_I, PIEZA_J, PIEZA_L, PIEZA_O, PIEZA_S, PIEZA_T, PIEZA_Z, PIEZA_X, PIEZA_C, PIEZA_P, PIEZA_H
 };
 
 
