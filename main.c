@@ -20,6 +20,7 @@ Entrega: No
 #include "funciones.h"
 #include "graficos.h"
 #include "config.h"
+#include "score.h"
 
 
 int Jugar(char *nombre);
@@ -129,6 +130,9 @@ int Jugar(char *nombre)
     uint8_t corriendo = 1;
     uint8_t fijada = 0;
     int gameOver = 0;
+    int lineas = 0;
+    int tabla[] = {0, 100, 300, 500, 800};
+
 
     // INICIALIZACIÓN DE TEMPORIZADORES (Siempre dividiendo por 1000.0 para pasar a segundos)
     tGBT_Temporizador* temporizador = gbt_temporizador_crear(velActual / 1000.0);
@@ -146,6 +150,7 @@ int Jugar(char *nombre)
     while(corriendo)
     {
         fijada = 0;
+        int seMovio = 0;
         gbt_procesar_entrada(); // Actualiza la cola de eventos de teclado de GBT
 
         // CONTROL DE SALIDA/PAUSA
@@ -157,9 +162,16 @@ int Jugar(char *nombre)
 
         // BLOQUE 1: PROCESAMIENTO DEL LOCK DELAY (Si expiró el tiempo, se consolida)
         if(estaEnSuperficie){
+                if(seMovio){
+        // se movió este frame, reseteamos el timer
+        gbt_temporizador_destruir(tempoRetraso);
+        tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+                            }
             if(gbt_temporizador_consumir(tempoRetraso)){
                 PiezaVolcar(&m, &p);
-                puntaje += EliminarFilasCompletasConPuntaje(&m);
+                lineas = EliminarFilasCompletas(&m);
+                if(lineas >= 1 && lineas <= 4)
+                    puntaje += tabla[lineas] * MultiplicadorPuntos(velActual);
 
                 // Spawn de la siguiente pieza
                 tipoPieza(&p, proximas[0], &m);
@@ -203,95 +215,119 @@ int Jugar(char *nombre)
         }
 
         // BLOQUE 3: CONTROL DE ENTRADAS DEL JUGADOR
-        if(!fijada){
-            // MOVER IZQUIERDA (Tecla A)
-            if(gbt_tecla_presionada(GBTK_a)){
-                PiezaMoverIzq(&p);
-                if(PiezaDetectarColision(&p, &m)) {
-                    PiezaMoverDer(&p);
-                } else {
-                    // Verificación fantasma de superficie
-                    PiezaMoverAbajo(&p);
-                    sigueApoyada = PiezaDetectarColision(&p, &m);
-                    PiezaMoverArriba(&p);
+       if(!fijada){
+    // MOVER IZQUIERDA
+    if(gbt_tecla_presionada(GBTK_a)){
+        PiezaMoverIzq(&p);
+        if(PiezaDetectarColision(&p, &m)){
+            PiezaMoverDer(&p);
+        } else {
+            seMovio = 1;
+            PiezaMoverAbajo(&p);
+            sigueApoyada = PiezaDetectarColision(&p, &m);
+            PiezaMoverArriba(&p);
 
-                    if(sigueApoyada && estaEnSuperficie){
-                        gbt_temporizador_destruir(tempoRetraso);
-                        tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
-                    } else if (!sigueApoyada) {
-                        estaEnSuperficie = 0;
-                    }
-                }
-            }
-
-            // MOVER DERECHA (Tecla D)
-            if(gbt_tecla_presionada(GBTK_d)){
-                PiezaMoverDer(&p);
-                if(PiezaDetectarColision(&p, &m)) {
-                    PiezaMoverIzq(&p);
-                } else {
-                    // Verificación fantasma de superficie
-
-
-                    if(sigueApoyada && estaEnSuperficie){
-                        gbt_temporizador_destruir(tempoRetraso);
-                        tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
-                    } else if (!sigueApoyada) {
-                        estaEnSuperficie = 0;
-                    }
-                }
-            }
-
-            // ROTAR PIEZA (Tecla W)
-            if(gbt_tecla_presionada(GBTK_w)){
-                PiezaRotarDerecha(&p);
-                if(PiezaDetectarColision(&p, &m)) {
-                    PiezaRotarIzquierda(&p);
-                } else {
-                    // Verificación fantasma post-rotación
-                    PiezaMoverAbajo(&p);
-                    sigueApoyada = PiezaDetectarColision(&p, &m);
-                    PiezaMoverArriba(&p);
-
-                    if(sigueApoyada && estaEnSuperficie){
-                        gbt_temporizador_destruir(tempoRetraso);
-                        tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
-                    }
-                }
-            }
-
-            if(gbt_tecla_presionada(GBTK_s)){
-                PiezaMoverAbajo(&p);
-                if(PiezaDetectarColision(&p, &m)){
-                    PiezaMoverArriba(&p);
-
-                    // Volcado instantáneo por empuje manual
-                    PiezaVolcar(&m, &p);
-                    estaEnSuperficie = 0;
-                    puntaje += EliminarFilasCompletasConPuntaje(&m);
-
-                    tipoPieza(&p, proximas[0], &m);
-                    for(uint8_t i = 0; i < CANT_PROXIMAS - 1; i++)
-                        proximas[i] = proximas[i+1];
-                    proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
-
-                    if(PiezaDetectarColision(&p, &m)){
-                        corriendo = 0;
-                        gameOver = 1;
-                    }
-
-                    piezasCaidas++;
-                    if(piezasCaidas % 10 == 0){
-                        velActual = RecalcularVelocidad(VelocidadSegunDificultad(config.DIFICULTAD), piezasCaidas);
-                        gbt_temporizador_destruir(temporizador);
-                        temporizador = gbt_temporizador_crear(velActual / 1000.0);
-                    }
-                }
-                else {
-                    puntaje++;
-                }
+            if(sigueApoyada && estaEnSuperficie){
+                gbt_temporizador_destruir(tempoRetraso);
+                tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+            } else if(!sigueApoyada){
+                estaEnSuperficie = 0;  // se movio y ya no toca nada
             }
         }
+    }
+
+    // MOVER DERECHA
+    if(gbt_tecla_presionada(GBTK_d)){
+        PiezaMoverDer(&p);
+        if(PiezaDetectarColision(&p, &m)){
+            PiezaMoverIzq(&p);
+        } else {
+            seMovio = 1;
+            PiezaMoverAbajo(&p);
+            sigueApoyada = PiezaDetectarColision(&p, &m);  // faltaba esto
+            PiezaMoverArriba(&p);
+
+            if(sigueApoyada && estaEnSuperficie){
+                gbt_temporizador_destruir(tempoRetraso);
+                tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+            } else if(!sigueApoyada){
+                estaEnSuperficie = 0;  // faltaba esto
+            }
+        }
+    }
+
+    // ROTAR DERECHA
+    if(gbt_tecla_presionada(GBTK_w)){
+        PiezaRotarDerecha(&p);
+        if(PiezaDetectarColision(&p, &m)){
+            PiezaRotarIzquierda(&p);
+        } else {
+            seMovio = 1;
+            PiezaMoverAbajo(&p);
+            sigueApoyada = PiezaDetectarColision(&p, &m);
+            PiezaMoverArriba(&p);
+
+            if(sigueApoyada && estaEnSuperficie){
+                gbt_temporizador_destruir(tempoRetraso);
+                tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+            } else if(!sigueApoyada){
+                estaEnSuperficie = 0;  // faltaba esto
+            }
+        }
+    }
+
+    // ROTAR IZQUIERDA
+    if(gbt_tecla_presionada(GBTK_q)){
+        PiezaRotarIzquierda(&p);
+        if(PiezaDetectarColision(&p, &m)){
+            PiezaRotarDerecha(&p);
+        } else {
+            seMovio = 1;
+            PiezaMoverAbajo(&p);
+            sigueApoyada = PiezaDetectarColision(&p, &m);
+            PiezaMoverArriba(&p);
+
+            if(sigueApoyada && estaEnSuperficie){
+                gbt_temporizador_destruir(tempoRetraso);
+                tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+            } else if(!sigueApoyada){
+                estaEnSuperficie = 0;  // faltaba esto
+            }
+        }
+    }
+
+    // BAJAR MANUAL
+    if(gbt_tecla_presionada(GBTK_s)){
+        PiezaMoverAbajo(&p);
+        if(PiezaDetectarColision(&p, &m)){
+            PiezaMoverArriba(&p);
+            PiezaVolcar(&m, &p);
+            estaEnSuperficie = 0;
+            lineas = EliminarFilasCompletas(&m);
+            if(lineas >= 1 && lineas <= 4)
+                puntaje += tabla[lineas] * MultiplicadorPuntos(velActual);
+
+            tipoPieza(&p, proximas[0], &m);
+            for(int i = 0; i < CANT_PROXIMAS - 1; i++)
+                proximas[i] = proximas[i+1];
+            proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
+
+            if(PiezaDetectarColision(&p, &m)){
+                corriendo = 0;
+                gameOver = 1;
+            }
+
+            piezasCaidas++;
+            if(piezasCaidas % 10 == 0){
+                velActual = RecalcularVelocidad(VelocidadSegunDificultad(config.DIFICULTAD), piezasCaidas);
+                gbt_temporizador_destruir(temporizador);
+                temporizador = gbt_temporizador_crear(velActual / 1000.0);
+            }
+        } else {
+            puntaje++;
+        }
+    }
+}
 
         RenderizarJuego(&p, &m, puntaje, proximas, nombre);
     }
@@ -299,7 +335,11 @@ int Jugar(char *nombre)
     gbt_temporizador_destruir(temporizador);
     gbt_temporizador_destruir(tempoRetraso);
 
-    if(gameOver)
-        return MenuGameOver(puntaje);
+    if(gameOver){
+        Score scores[MAX_SCORES];
+        int cant = 0;
+        ScoresCargar(scores, &cant);
+        ScoresAgregar(scores, &cant, nombre, puntaje);
+        return MenuGameOver(puntaje);}
     return SALIR;
 }

@@ -16,17 +16,10 @@ void MatrizMostrar(matrix* m)
     }
 }
 
-
-/*
- * Inicializa la matriz
- * Devuelve 0 Si OK y -1 Si hay error
- */
 uint8_t MatrizIniciar(matrix* m, int fil, int col)
 {   m->mat = malloc (fil * sizeof(void*));
     if(m->mat==NULL)
         return INIT_ERR;
-
-    //inicializamos sus punteros
 
     for(int i = 0; i < fil ; i++)
     {
@@ -41,11 +34,6 @@ uint8_t MatrizIniciar(matrix* m, int fil, int col)
     return OK;
 }
 
-
-
-/*
- * Reinicia a 0 una fila de la matriz pasada como parametro
- */
 void MatrizVaciarFil(matrix *m, uint8_t row)
 {
     for(uint8_t j=0; j<m->col;j++)
@@ -54,11 +42,6 @@ void MatrizVaciarFil(matrix *m, uint8_t row)
     }
 }
 
-
-/*
- * Dada una matriz m y una fila row
- * Desplaza la matris hacia abajo y la fila row pasa a ser la primera.
- */
 void MatrizDespFil(matrix* m, uint8_t row)
 {
     uint8_t* aux = m->mat[row];
@@ -90,10 +73,6 @@ void PiezaVolcar(matrix* m, PiezaActiva* p)
     }
 }
 
-
-/*
- * Devuelve el índice de la primera fila completa, o -1 si no hay ninguna.
- */
 int8_t MatrizFilCompleta(matrix* m)
 {
     int8_t llena = 1;
@@ -110,39 +89,21 @@ int8_t MatrizFilCompleta(matrix* m)
     return -1;
 }
 
-/*
 void MatrizEliminarFila(matrix* m, int row)
 {
-    // Vaciamos la fila antes de reubicarla
-    for(int j = m->col/2; j < m->col; j++){
-        m->mat[row][j] = N;
-        m->mat[row][j%(m->col-1)] = N;
-        gbt_volcar_backbuffer();
-        gbt_esperar(1000);
-    }
-
-    // Guardamos el puntero de la fila eliminada
-    MatrizDespFil(m,row);
-}
-
- */
-void MatrizEliminarFila(matrix* m, int row)
-{
-    // Vaciamos la fila antes de reubicarla
     for(int j = 0; j < m->col; j++)
         m->mat[row][j] = N;
     MatrizDespFil(m,row);
 }
 
 
-int EliminarFilasCompletasConPuntaje(matrix* m)
+int EliminarFilasCompletas(matrix* m)
 {
-    uint8_t filasEliminadas = 0;
-
-    int8_t filaCompleta;
-    while((filaCompleta = MatrizFilCompleta(m)) != -1) {
+    int filasEliminadas = 0;
+    int filaCompleta;
+    while((filaCompleta = MatrizFilCompleta(m)) != -1){
         MatrizEliminarFila(m, filaCompleta);
         filasEliminadas++;
     }
-    return filasEliminadas > 0 ? filasEliminadas*100 + (filasEliminadas-1)*100 : 0;
+    return filasEliminadas;
 }
