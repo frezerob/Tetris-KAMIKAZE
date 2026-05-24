@@ -142,17 +142,6 @@ void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado, matrix* m) {
         }
     }
 }
-/*
-int8_t PiezaPuedeRotar(PiezaActiva* p)
-{
-    uint8_t flag = 0;
-    for(uint8_t i = 0; i<ORDEN; i++){
-        for(uint8_t j = 0; j<ORDEN; j++){
-            if((p->forma[p->rotacion][i * 4 + j) != 0 && )
-        }
-    }
-}
-*/
 
 void PiezaMoverArriba(PiezaActiva* p)
 {
@@ -179,7 +168,6 @@ void PiezaRotarDerecha(PiezaActiva* p)
 }
 
 
-// funciones.c
 
 int8_t PiezaDetectarColision(PiezaActiva* p, matrix* m)
 {
@@ -224,8 +212,14 @@ uint16_t VelocidadSegunDificultad(int dificultad)
 {
     switch(dificultad){
         case 0: return 1000;
-        case 1: return 1500;
+        case 1: return 500;
         case 2: return 200;
         default: return 1000;
     }
 }
+
+int MultiplicadorPuntos(int velActual)
+{
+    return 1000 / velActual;
+}
+

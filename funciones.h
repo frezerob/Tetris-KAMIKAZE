@@ -23,4 +23,5 @@ int8_t PiezaDetectarColision(PiezaActiva* p, matrix* m);
 void PiezaRotarIzquierda(PiezaActiva* p);
 int RecalcularVelocidad(int velInicial, int piezas);
 uint16_t VelocidadSegunDificultad(int dificultad);
+int MultiplicadorPuntos(int velActual);
 #endif // FUNCIONES_H_INCLUDED
