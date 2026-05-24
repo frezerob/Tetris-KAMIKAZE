@@ -24,4 +24,5 @@ void PiezaRotarIzquierda(PiezaActiva* p);
 int RecalcularVelocidad(int velInicial, int piezas);
 uint16_t VelocidadSegunDificultad(int dificultad);
 int MultiplicadorPuntos(int velActual);
+uint8_t NombreEsGod(char *nombre);
 #endif // FUNCIONES_H_INCLUDED

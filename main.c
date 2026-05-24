@@ -81,7 +81,7 @@ int Jugar(char *nombre)
     matrix m;
     PiezaActiva p;
 
-
+    uint8_t cheat = NombreEsGod(nombre) ? 2 : 1;
 
     if(MatrizIniciar(&m, config.FIL_TABLERO, config.COL_TABLERO) == INIT_ERR)
         return INIT_ERR;
@@ -97,7 +97,7 @@ int Jugar(char *nombre)
         proximas[i] = proximas[i+1];
     proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
 
-    uint16_t velActual = VelocidadSegunDificultad(config.DIFICULTAD);
+    uint16_t velActual = VelocidadSegunDificultad(config.DIFICULTAD) * cheat;
     int piezasCaidas = 0;
     int puntaje =  0;
     uint8_t corriendo = 1;
