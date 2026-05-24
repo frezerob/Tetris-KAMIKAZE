@@ -7,7 +7,7 @@
 
 
 
-extern uint8_t (*FORMAS[7])[16];
+extern uint8_t (*FORMAS[11])[16];
 
 // Prototipos de funciones
 void semilla();

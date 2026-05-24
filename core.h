@@ -8,7 +8,6 @@
 #include <time.h>
 #include "GBT/gbt.h"
 #include "fuente8x8.h"
-#include "config.h"
 #include <string.h>
 
 typedef struct {
@@ -64,6 +63,16 @@ typedef enum {
     FONDO
 } eTexturas;
 
+typedef enum {
+    fuente_8x8,
+    fuente_8x16
+} eFuentes;
+
+typedef enum {
+    CLASICO,
+    DELUXE
+} ModoJuego;
+
 
 #define ORDEN 4
 
@@ -72,10 +81,9 @@ typedef enum {
 #define CANT_TEXTURAS 4
 #define TITULO "Primera Prueba"
 //MACROS TABLERO
-#define FIL_TABLERO 20
-#define COL_TABLERO 10
-#define TAM_FUENTE8X8 8
 
+#define TAM_FUENTE8X8 8
+#define TAM_FUENTE16x8 16
 //ESTADOS
 #define TRUE 1
 #define FALSE 0

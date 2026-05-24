@@ -44,20 +44,22 @@ int MenuIniciar(TDAconfig cfg)
 void MenuConfiguracion()
 {
     // char* opcMenu[] = {"DIFICULTAD", "RESOLUCION", "VOLVER"}; ???
-    uint8_t cant = 3;
+    uint8_t cant = 5;
     uint8_t opcion = 0;
     uint8_t corriendo = 1;
     eGBT_Tecla tecla;
+
     char* difs[] = {"FACIL", "NORMAL", "DIFICIL"};
     char* ress[] = {"320X200", "640X480"};
-
+    char *modos[] = {"CLASICO", "DELUXE"};
     while(corriendo){
         // Mostramos la opcion seleccionada actualmente en cada fila
-        char lineaDif[32], lineaRes[32];
+        char lineaDif[32], lineaRes[32], modoJuego[32], colTablero[32];
         sprintf(lineaDif, "DIFICULTAD %s", difs[config.DIFICULTAD]);
         sprintf(lineaRes, "RESOLUCION %s", ress[config.ANCHO == 640 ? 0 : 1]);
-
-        char* opcMostrar[] = {lineaDif, lineaRes, "VOLVER"};
+        sprintf(modoJuego, "MODO DE JUEGO %s",modos[config.MODO]);
+        sprintf(colTablero,"CANTIDAD DE COLUMNAS %d",config.COL_TABLERO);
+        char* opcMostrar[] = {lineaDif, lineaRes,modoJuego,colTablero, "VOLVER"};
         ImprimirMenu(opcion, opcMostrar, cant);
 
         gbt_procesar_entrada();
@@ -87,8 +89,18 @@ void MenuConfiguracion()
                 gbt_destruir_ventana();
                 gbt_crear_ventana(TITULO, config.ANCHO, config.ALTO, config.ESCALA);
             }
-            else if(opcion == 2)
+            else if(opcion == 2){
+                config.MODO = (config.MODO + 1) % 2;
+                config.COL_TABLERO = (config.MODO == CLASICO) ? 10 : 8;
+            }
+            else if(opcion == 3 && config.MODO == DELUXE){
+                config.COL_TABLERO++;
+                if(config.COL_TABLERO > 16)
+                    config.COL_TABLERO = 8;
+            }
+            else if(opcion == 4){
                 break;
+            }
 
         }
         if(tecla == GBTK_ESCAPE)

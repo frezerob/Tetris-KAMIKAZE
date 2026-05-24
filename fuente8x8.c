@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "core.h"
+#include "config.h"
 #include <string.h>
 const uint8_t fuente8x8[26][8] = {
     {0x3C, 0x66, 0x42, 0x42, 0x7E, 0x42, 0x42, 0x00}, // A

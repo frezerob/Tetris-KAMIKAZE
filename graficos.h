@@ -19,7 +19,9 @@ void DibujarTextoCentradoConSombra(char* texto, uint16_t Y, uint8_t color, uint1
 void DibujarTextoConSombra(char* texto, uint16_t X, uint16_t Y, uint8_t color, uint8_t colorSombra);
 void DibujarTextoEnRecuadro(char* texto, uint16_t centroX, uint16_t centroY, uint8_t colorTexto, uint8_t colorFondo, eTexturas texturaBorde);
 
-
+void DibujarBitMap(const uint8_t bitmap[], uint16_t X, uint16_t Y, uint8_t color);
+void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t color);
+void DibujarBitMap8x16(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t color);
 //
 void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color);
 void DibujarProximaPieza(uint8_t (*forma)[16], uint16_t X, uint16_t Y);
