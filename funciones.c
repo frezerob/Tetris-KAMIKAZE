@@ -114,7 +114,7 @@ uint8_t (*FORMAS[11])[16] = {
 void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado, matrix* m) {
     pieza->forma = FORMAS[tipoSeleccionado];
     pieza->rotacion = 0;
-    pieza->posY = 0;
+    pieza->posY = -1;
 
     pieza->posX = config.ultimaPosX;
 
@@ -222,3 +222,12 @@ int MultiplicadorPuntos(int velActual)
     return 1000 / velActual;
 }
 
+uint8_t NombreEsGod(char *nombre)
+{
+    char *GOD = "GOD";
+    for(uint8_t c=0;c<MAX_NOMBRE;c++){
+        if(nombre[c] != GOD[c])
+            return 0;
+    }
+    return 1;
+}
