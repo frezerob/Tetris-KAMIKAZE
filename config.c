@@ -39,6 +39,9 @@ int ConfigCargar(char* archivo)
         else if(strcmp(clave, "PALETA") == 0){
             config.PALETA = atoi(valor);
         }
+
+        else if(strcmp(clave, "COL_TABLERO") == 0)
+        config.COL_TABLERO = atoi(valor);
     }
 
     fclose(f);
@@ -56,6 +59,7 @@ int ConfigGuardar(char* archivo)
     fprintf(f, "DIFICULTAD %s\n", difs[config.DIFICULTAD]);
     fprintf(f, "RESOLUCION %d %d\n", config.ANCHO, config.ALTO);
     fprintf(f, "PALETA %d\n", config.PALETA);
+    fprintf(f, "COL_TABLERO %d\n", config.COL_TABLERO);
 
     fclose(f);
     return 0;
@@ -78,4 +82,8 @@ void AplicarConfig(uint16_t res){
         config.ESCALA_FUENTE = 1;
         config.FUENTE = fuente_8x8;
     }
+    // agregás estas dos líneas:
+    config.FIL_TABLERO = 20;
+    if(config.COL_TABLERO == 0)  // solo si no estaba cargado
+        config.COL_TABLERO = 10;
 }

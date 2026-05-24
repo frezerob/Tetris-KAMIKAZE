@@ -66,6 +66,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="menu.h" />
+		<Unit filename="score.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="score.h" />
 		<Unit filename="tablero.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -45,31 +45,29 @@ int MenuIniciar(TDAconfig cfg)
 
 void MenuConfiguracion()
 {
-    // char* opcMenu[] = {"DIFICULTAD", "RESOLUCION", "VOLVER"}; ???
     uint8_t cant = 5;
     uint8_t opcion = 0;
     uint8_t corriendo = 1;
+    char lineaPaleta[32];
     eGBT_Tecla tecla;
-
     char* difs[] = {"FACIL", "NORMAL", "DIFICIL"};
     char* ress[] = {"320X200", "640X480"};
+    char* nombresPaleta[] = {"ORIGINAL", "LCD", "MONOCROMO"};
     char *modos[] = {"CLASICO", "DELUXE"};
     while(corriendo){
-        // Mostramos la opcion seleccionada actualmente en cada fila
         char lineaDif[32], lineaRes[32], modoJuego[32], colTablero[32];
         sprintf(lineaDif, "DIFICULTAD %s", difs[config.DIFICULTAD]);
+        sprintf(lineaPaleta, "PALETA %s", nombresPaleta[config.PALETA]);
         sprintf(lineaRes, "RESOLUCION %s", ress[config.ANCHO == 640 ? 0 : 1]);
         sprintf(modoJuego, "MODO DE JUEGO %s",modos[config.MODO]);
         sprintf(colTablero,"CANTIDAD DE COLUMNAS %d",config.COL_TABLERO);
-        char* opcMostrar[] = {lineaDif, lineaRes,modoJuego,colTablero, "VOLVER"};
-        ImprimirMenu(opcion, opcMostrar, cant);
+        char* opcMostrar[] = {lineaDif, lineaRes, modoJuego, colTablero, lineaPaleta, "VOLVER"};
+        uint8_t cant = 6;
 
         gbt_procesar_entrada();
-
         CalcularOpcion(&tecla, &opcion, cant);
+        ImprimirMenu(opcion, opcMostrar, cant);
 
-
-        // Opcion de cambio de resolucion
         if(tecla == GBTK_ENTER){
             if(opcion == 0){
                 config.DIFICULTAD = (config.DIFICULTAD + 1) % 3;
@@ -84,10 +82,7 @@ void MenuConfiguracion()
                 }
                 config.OFFSET_X = 2 * config.TAM_CELDA;
                 config.OFFSET_Y = 4 * config.TAM_CELDA;
-
-
                 ConfigGuardar(CONFIG_FILE);
-
                 gbt_destruir_ventana();
                 gbt_crear_ventana(TITULO, config.ANCHO, config.ALTO, config.ESCALA);
             }
@@ -101,17 +96,18 @@ void MenuConfiguracion()
                     config.COL_TABLERO = 8;
             }
             else if(opcion == 4){
-                break;
+                config.PALETA = (config.PALETA + 1) % 3;
+                AplicarPaleta(config.PALETA);
+                ConfigGuardar(CONFIG_FILE);
             }
-
+            else if(opcion == 5)
+                corriendo = 0;
         }
         if(tecla == GBTK_ESCAPE)
             corriendo = 0;
-
         gbt_esperar(16);
     }
 }
-
 
 
 int MenuGameOver(int puntaje)

@@ -14,4 +14,5 @@ int8_t MenuPausa();
 void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opciones);
 char* PantallaIngresoNombre();
 void MenuEstadisticas();
+void AplicarPaleta(int indicePaleta);
 #endif // MENU_H_INCLUDED

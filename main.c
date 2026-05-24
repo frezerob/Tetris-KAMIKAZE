@@ -61,35 +61,6 @@ int IniciarSistema(int argc, char* argv[])
     config.OFFSET_X = 2 * config.TAM_CELDA;
     config.OFFSET_Y = 4 * config.TAM_CELDA;
 
-    tGBT_ColorRGB paleta[PALETA_MAX_COLORES] = {
-        {0x00, 0x00, 0x00}, // N
-        {0x00, 0xFF, 0xFF}, // I
-        {0x00, 0xAA, 0xAA}, // I_OSCURO
-        {0x99, 0xFF, 0xFF}, // I_CLARO
-        {0xFF, 0xFF, 0x00}, // O
-        {0xAA, 0xAA, 0x00}, // O_OSCURO
-        {0xFF, 0xFF, 0x99}, // O_CLARO
-        {0x80, 0x00, 0x80}, // T
-        {0x55, 0x00, 0x55}, // T_OSCURO
-        {0xCC, 0x99, 0xCC}, // T_CLARO
-        {0x00, 0xFF, 0x00}, // S
-        {0x00, 0xAA, 0x00}, // S_OSCURO
-        {0x99, 0xFF, 0x99}, // S_CLARO
-        {0xFF, 0x00, 0x00}, // Z
-        {0xAA, 0x00, 0x00}, // Z_OSCURO
-        {0xFF, 0x99, 0x99}, // Z_CLARO
-        {0x00, 0x00, 0xFF}, // J
-        {0x00, 0x00, 0xAA}, // J_OSCURO
-        {0x99, 0x99, 0xFF}, // J_CLARO
-        {0xFF, 0xA5, 0x00}, // L
-        {0xAA, 0x6E, 0x00}, // L_OSCURO
-        {0xFF, 0xD1, 0x99}, // L_CLARO
-        {0x80, 0x80, 0x80}, // BRD
-        {0x55, 0x55, 0x55}, // BRD_OSCURO
-        {0xCC, 0xCC, 0xCC}, // BRD_CLARO
-        {0xFF, 0xFF, 0xFF}, // W
-        {0x01, 0x01, 0x01}, // TR
-    };
     if(gbt_iniciar() != 0){
         printf("%s", gbt_obtener_log());
         return INIT_ERR;
@@ -98,13 +69,8 @@ int IniciarSistema(int argc, char* argv[])
         printf("%s", gbt_obtener_log());
         return INIT_ERR;
     }
-    if(gbt_aplicar_paleta(paleta, PALETA_MAX_COLORES, GBT_FORMATO_888) != 0){
-        printf("%s", gbt_obtener_log());
-        return INIT_ERR;
-    }
 
-    config.FIL_TABLERO = 20;
-    config.COL_TABLERO = 10;
+    AplicarPaleta(config.PALETA);  // reemplaza todo el bloque de paleta
 
     return 0;
 }
@@ -283,6 +249,25 @@ int Jugar(char *nombre)
             }
         }
     }
+    if(gbt_tecla_presionada(GBTK_q)){
+        PiezaRotarIzquierda(&p);
+        if(PiezaDetectarColision(&p, &m)){
+            PiezaRotarDerecha(&p);
+        } else {
+            seMovio = 1;
+            PiezaMoverAbajo(&p);
+            sigueApoyada = PiezaDetectarColision(&p, &m);
+            PiezaMoverArriba(&p);
+
+            if(sigueApoyada && estaEnSuperficie){
+                gbt_temporizador_destruir(tempoRetraso);
+                tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
+            } else if(!sigueApoyada){
+                estaEnSuperficie = 0;  // faltaba esto
+            }
+        }
+    }
+
 
     if(gbt_tecla_presionada(GBTK_s)){
         PiezaMoverAbajo(&p);
@@ -335,38 +320,4 @@ int Jugar(char *nombre)
 
         return SALIR;
 }
-
-
-/*    // BAJAR MANUAL
-    if(gbt_tecla_presionada(GBTK_s)){
-        PiezaMoverAbajo(&p);
-        if(PiezaDetectarColision(&p, &m)){
-            PiezaMoverArriba(&p);
-            PiezaVolcar(&m, &p);
-            estaEnSuperficie = 0;
-            lineas = EliminarFilasCompletas(&m);
-            if(lineas >= 1 && lineas <= 4)
-                puntaje += tabla[lineas] * MultiplicadorPuntos(velActual);
-
-            tipoPieza(&p, proximas[0], &m);
-            for(int i = 0; i < CANT_PROXIMAS - 1; i++)
-                proximas[i] = proximas[i+1];
-            proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
-
-            if(PiezaDetectarColision(&p, &m)){
-                corriendo = 0;
-                gameOver = 1;
-            }
-
-            piezasCaidas++;
-            if(piezasCaidas % 10 == 0){
-                velActual = RecalcularVelocidad(VelocidadSegunDificultad(config.DIFICULTAD), piezasCaidas);
-                gbt_temporizador_destruir(temporizador);
-                temporizador = gbt_temporizador_crear(velActual / 1000.0);
-            }
-        } else {
-            puntaje++;
-        }
-    }
-*/
 
