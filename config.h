@@ -1,6 +1,8 @@
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
 
+
+#include "core.h"
 #include <stdint.h>
 
 typedef struct{
@@ -13,6 +15,11 @@ typedef struct{
     float ESCALA_FUENTE;
     int DIFICULTAD;
     int PALETA;
+    uint8_t FUENTE;
+    ModoJuego MODO;
+    uint8_t COL_TABLERO;
+    uint8_t FIL_TABLERO;
+    uint8_t ultimaPosX;
 }TDAconfig;
 
 extern TDAconfig config;

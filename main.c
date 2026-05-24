@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
             break;
         if(ret == MENU_PRINCIPAL){
             ret = MenuIniciar(config);
-            nombre = PantallaIngresoNombre();
             if(ret == SALIR) break;
+            nombre = PantallaIngresoNombre();
             // si ret == 0 (JUGAR) vuelve a Jugar()
         }
         // si ret == REINICIAR vuelve directo a Jugar()
@@ -102,6 +102,9 @@ int IniciarSistema(int argc, char* argv[])
         return INIT_ERR;
     }
 
+    config.FIL_TABLERO = 20;
+    config.COL_TABLERO = 10;
+
     return 0;
 }
 
@@ -111,8 +114,12 @@ int Jugar(char *nombre)
     matrix m;
     PiezaActiva p;
 
-    if(MatrizIniciar(&m, FIL_TABLERO, COL_TABLERO) == INIT_ERR)
+
+
+    if(MatrizIniciar(&m, config.FIL_TABLERO, config.COL_TABLERO) == INIT_ERR)
         return INIT_ERR;
+
+    config.ultimaPosX = config.COL_TABLERO/2;
 
     int proximas[CANT_PROXIMAS];
     for(int i = 0; i < CANT_PROXIMAS; i++)
@@ -146,8 +153,7 @@ int Jugar(char *nombre)
     while(corriendo)
     {
         fijada = 0;
-        gbt_procesar_entrada(); // Actualiza la cola de eventos de teclado de GBT
-
+        gbt_procesar_entrada();
         // CONTROL DE SALIDA/PAUSA
         if(gbt_tecla_presionada(GBTK_ESCAPE)){
             int8_t opcion = MenuPausa();
@@ -155,13 +161,13 @@ int Jugar(char *nombre)
                 break;
         }
 
-        // BLOQUE 1: PROCESAMIENTO DEL LOCK DELAY (Si expiró el tiempo, se consolida)
+        // BLOQUE 1: PROCESAMIENTO DEL LOCK DELAY Si expiró el tiempo, se fija
         if(estaEnSuperficie){
             if(gbt_temporizador_consumir(tempoRetraso)){
+                config.ultimaPosX = p.posX;
                 PiezaVolcar(&m, &p);
                 puntaje += EliminarFilasCompletasConPuntaje(&m);
 
-                // Spawn de la siguiente pieza
                 tipoPieza(&p, proximas[0], &m);
                 for(int i = 0; i < CANT_PROXIMAS - 1; i++)
                     proximas[i] = proximas[i+1];
@@ -180,11 +186,11 @@ int Jugar(char *nombre)
                 }
 
                 estaEnSuperficie = 0;
-                fijada = 1; // Evita que la nueva pieza sufra caídas o movimientos en este ciclo
+                fijada = 1;
             }
         }
 
-        // BLOQUE 2: GRAVEDAD POR TIEMPO (Solo detecta la superficie y activa el Lock Delay)
+        // BLOQUE 2: GRAVEDAD POR TIEMPO (Solo detecta la superficie y activa el tiempo de fijacion)
         if(!fijada && gbt_temporizador_consumir(temporizador)){
             PiezaMoverAbajo(&p);
             if(PiezaDetectarColision(&p, &m)){
@@ -264,7 +270,7 @@ int Jugar(char *nombre)
                 PiezaMoverAbajo(&p);
                 if(PiezaDetectarColision(&p, &m)){
                     PiezaMoverArriba(&p);
-
+                    config.ultimaPosX = p.posX;
                     // Volcado instantáneo por empuje manual
                     PiezaVolcar(&m, &p);
                     estaEnSuperficie = 0;
@@ -299,7 +305,12 @@ int Jugar(char *nombre)
     gbt_temporizador_destruir(temporizador);
     gbt_temporizador_destruir(tempoRetraso);
 
-    if(gameOver)
+    if(gameOver){
+        for(uint8_t i = 0; i < m.fil; i++)
+            free(m.mat[i]);
+        free(m.mat);
         return MenuGameOver(puntaje);
+    }
+
     return SALIR;
 }

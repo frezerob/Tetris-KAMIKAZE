@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "GBT/gbt.h"
+#include "config.h"
 void MatrizMostrar(matrix* m)
 {
     for(uint8_t i=0; i<m->fil; i++)
@@ -81,10 +82,20 @@ void PiezaVolcar(matrix* m, PiezaActiva* p)
             int fila = p->posY + i;
             int col  = p->posX + j;
 
-            if(fila >= 0 && fila < FIL_TABLERO &&
-               col  >= 0 && col  < COL_TABLERO)
+            if(fila >= 0 && fila < config.FIL_TABLERO)
             {
-                m->mat[fila][col] = color;
+                if(config.MODO == DELUXE)
+                {
+                    col = (col % config.COL_TABLERO + config.COL_TABLERO) % config.COL_TABLERO;
+                    m->mat[fila][col] = color;
+                }
+                else
+                {
+                    if(col >= 0 && col < config.COL_TABLERO)
+                    {
+                        m->mat[fila][col] = color;
+                    }
+                }
             }
         }
     }

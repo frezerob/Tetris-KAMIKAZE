@@ -4,7 +4,7 @@
 #include "GBT/gbt.h"
 #include "funciones.h"
 #include "core.h"
-
+#include "config.h"
 void DibujarTablero(matrix* m, uint16_t X, uint16_t Y){
 
     uint16_t PosX = X + config.OFFSET_X;
@@ -23,17 +23,44 @@ void DibujarPieza(PiezaActiva* p)
 {
     for(uint8_t i = 0; i < ORDEN; i++){
         for(uint8_t j = 0; j < ORDEN; j++){
-            if(p->forma[p->rotacion][i*ORDEN+j] != TR && (p->posY+i) >=0)
-                DibujarCelda(config.OFFSET_X + (p->posX + j ) * config.TAM_CELDA,  // offset solo acá
-                                  config.OFFSET_Y + (p->posY + i)  * config.TAM_CELDA,
-                                  p->forma[p->rotacion][i * ORDEN + j],
-                                  config.TAM_CELDA,
-                                  BLOQUE
-                                  );
+            if(p->forma[p->rotacion][i*ORDEN+j] == TR)
+                continue;
+            if((p->posY+i)<0)
+                continue;
+            int16_t fil = p->posY + i;
+            int16_t col = p->posX + j;
+
+            if(config.MODO == DELUXE){
+
+                if (col < 0) {
+                    // Si se fue por la izquierda (ej: -1), aparece a la derecha (9)
+                    col += config.COL_TABLERO;
+                }
+                else if (col >= config.COL_TABLERO) {
+                    // Si se fue por la derecha (ej: 10), aparece a la izquierda (0)
+                    col-=config.COL_TABLERO;
+            }
+                DibujarCelda(config.OFFSET_X + col * config.TAM_CELDA,  // offset solo acá
+                  config.OFFSET_Y + fil  * config.TAM_CELDA,
+                  p->forma[p->rotacion][i * ORDEN + j],
+                  config.TAM_CELDA,
+                  BLOQUE
+                );
+            }
+            else{
+                if(col >= 0 && col < config.COL_TABLERO) {
+                    DibujarCelda(
+                        config.OFFSET_X + col * config.TAM_CELDA,
+                        config.OFFSET_Y + fil * config.TAM_CELDA,
+                        p->forma[p->rotacion][i * ORDEN + j],
+                        config.TAM_CELDA,
+                        BLOQUE
+                    );
+                }
+            }
         }
     }
 }
-
 
 const uint8_t texturas[CANT_TEXTURAS][8][8] =
 {
@@ -123,6 +150,13 @@ void DibujarCelda(uint16_t X, uint16_t Y, uint8_t color, uint8_t TAMANIO, eTextu
 }
 
 
+void DibujarBitMap(const uint8_t bitmap[], uint16_t X, uint16_t Y, uint8_t color){
+    if(config.FUENTE == fuente_8x8)
+        DibujarBitMap8x8(bitmap,X,Y,color);
+    else
+        DibujarBitMap8x16(bitmap,X,Y,color);
+}
+
 void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t color){
 
     uint8_t bits;
@@ -148,8 +182,33 @@ void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t c
     }
 }
 
+void DibujarBitMap8x16(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t color)
+{
+    uint8_t bits;
+    for(int8_t f=0; f<TAM_FUENTE16x8; f++){
+
+        bits =  bitmap[f];
 
 
+        for(int8_t c=0; c<TAM_FUENTE8X8; c++){
+            if(bits & (1 << (7 - c)))
+            {
+                uint16_t x_pixel = X + c * config.ESCALA_FUENTE;
+                uint16_t y_pixel = Y + f * config.ESCALA_FUENTE;
+
+                // Dibujamos un bloque sólido del tamaño de config.ESCALA_FUENTE|
+                for(uint16_t sy = 0; sy < config.ESCALA_FUENTE; sy++) {
+                    for(uint16_t sx = 0; sx < config.ESCALA_FUENTE; sx++) {
+                        gbt_dibujar_pixel(x_pixel + sx, y_pixel + sy, color);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+//
 void DibujarLetra(char c, uint16_t X, uint16_t Y, uint8_t color)
 {
     if(c<'A' || c>'Z')
@@ -263,8 +322,8 @@ void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char
     DibujarTablero(m,0,0);
     DibujarPieza(p);
     //RECTANGULO DE ESTADISTICAS
-    DibujarRectangulo(config.OFFSET_X + (COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
-    DibujarPuntaje(puntaje, config.OFFSET_X + (COL_TABLERO + 4) * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE"), config.OFFSET_Y + config.TAM_CELDA/2, T);
+    DibujarRectangulo(config.OFFSET_X + (config.COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
+    DibujarPuntaje(puntaje, config.OFFSET_X + (config.COL_TABLERO + 4) * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE"), config.OFFSET_Y + config.TAM_CELDA/2, T);
     DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y + config.TAM_CELDA/2,T,-config.OFFSET_X -5);
     //RECTANGULO TITULO
     DibujarRectangulo(config.OFFSET_X,config.TAM_CELDA,26,2,N,PLANO);
@@ -273,7 +332,7 @@ void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char
 
 
 
-    int xProx = config.OFFSET_X + (COL_TABLERO + 2) * config.TAM_CELDA;
+    int xProx = config.OFFSET_X + (config.COL_TABLERO + 2) * config.TAM_CELDA;
     int yProx = config.OFFSET_Y + config.TAM_CELDA * 3;
     for(uint8_t i = 0; i < CANT_PROXIMAS; i++)
         DibujarProximaPieza(FORMAS[proximas[i]], xProx, yProx + i * (ORDEN * config.TAM_CELDA + 5));

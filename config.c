@@ -68,6 +68,7 @@ void AplicarConfig(uint16_t res){
         config.ESCALA = 1.5;
         config.TAM_CELDA = 16;
         config.ESCALA_FUENTE = 2.2;
+        config.FUENTE = fuente_8x16;
     }
     else{
         config.ANCHO = 320;
@@ -75,5 +76,6 @@ void AplicarConfig(uint16_t res){
         config.ESCALA = 2;
         config.TAM_CELDA = 8;
         config.ESCALA_FUENTE = 1;
+        config.FUENTE = fuente_8x8;
     }
 }

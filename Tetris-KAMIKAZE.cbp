@@ -43,6 +43,10 @@
 		</Unit>
 		<Unit filename="config.h" />
 		<Unit filename="core.h" />
+		<Unit filename="fuente16x8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="fuente16x8.h" />
 		<Unit filename="fuente8x8.c">
 			<Option compilerVar="CC" />
 		</Unit>
