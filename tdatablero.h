@@ -19,7 +19,7 @@ void MatrizVaciarFil(matrix *m, uint8_t row);
 void MatrizDespFil(matrix* m, uint8_t row);
 int8_t MatrizFilCompleta(matrix* m);
 void MatrizEliminarFila(matrix* m, int row);
-
+int EliminarFilasCompletasConPuntaje(matrix* m);
 int EliminarFilasCompletas(matrix* m);
 void PiezaVolcar(matrix* m, PiezaActiva* p);
 #endif // TDATABLERO_H_INCLUDED

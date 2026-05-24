@@ -280,7 +280,7 @@ void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color)
 {
     char Spuntaje[17];
     itoa(puntaje,Spuntaje,10);
-    DibujarTexto(Spuntaje,X,Y,color);
+    DibujarTextoConSombra(Spuntaje,X,Y,color,T);
 
 }
 
@@ -323,8 +323,8 @@ void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char
     DibujarPieza(p);
     //RECTANGULO DE ESTADISTICAS
     DibujarRectangulo(config.OFFSET_X + (config.COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
-    DibujarPuntaje(puntaje, config.OFFSET_X + (config.COL_TABLERO + 4) * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE"), config.OFFSET_Y + config.TAM_CELDA/2, T);
-    DibujarTextoCentrado("PUNTAJE",config.OFFSET_Y + config.TAM_CELDA/2,T,-config.OFFSET_X -5);
+    DibujarPuntaje(puntaje, config.OFFSET_X + (config.COL_TABLERO + 4) * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE"), config.OFFSET_Y + config.TAM_CELDA/2, W);
+    DibujarTextoCentradoConSombra("PUNTAJE",config.OFFSET_Y + config.TAM_CELDA/2,W,-config.OFFSET_X -5,T);
     //RECTANGULO TITULO
     DibujarRectangulo(config.OFFSET_X,config.TAM_CELDA,26,2,N,PLANO);
     DibujarTextoConSombra("TETRIS KAMIKAZE",config.OFFSET_X,config.TAM_CELDA * 1.5, S,T);

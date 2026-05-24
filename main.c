@@ -157,7 +157,7 @@ int Jugar(char *nombre)
     while(corriendo)
     {
         fijada = 0;
- 
+
         uint8_t seMovio = 0;
         gbt_procesar_entrada();
 
@@ -180,7 +180,7 @@ int Jugar(char *nombre)
                 PiezaVolcar(&m, &p);
                 lineas = EliminarFilasCompletas(&m);
                 if(lineas >= 1 && lineas <= 4)
-                    puntaje += tabla[lineas] * MultiplicadorPuntos(velActual);
+                    puntaje += tabla[lineas] * MultiplicadorPuntos(velActual)* MultiplicadorPuntos(velActual);
 
                 tipoPieza(&p, proximas[0], &m);
                 for(int i = 0; i < CANT_PROXIMAS - 1; i++)
@@ -292,7 +292,7 @@ int Jugar(char *nombre)
             // Volcado instantáneo por empuje manual
             PiezaVolcar(&m, &p);
             estaEnSuperficie = 0;
-            puntaje += EliminarFilasCompletasConPuntaje(&m);
+            puntaje += EliminarFilasCompletasConPuntaje(&m) * MultiplicadorPuntos(velActual);
 
             tipoPieza(&p, proximas[0], &m);
             for(uint8_t i = 0; i < CANT_PROXIMAS - 1; i++)
@@ -316,7 +316,26 @@ int Jugar(char *nombre)
         }
             }
         }
+        RenderizarJuego(&p, &m, puntaje, proximas, nombre);
     }
+
+    gbt_temporizador_destruir(temporizador);
+    gbt_temporizador_destruir(tempoRetraso);
+
+        if(gameOver){
+            for(uint8_t i = 0; i < m.fil; i++)
+                free(m.mat[i]);
+            free(m.mat);
+            Score scores[MAX_SCORES];
+            int cant = 0;
+            ScoresCargar(scores, &cant);
+            ScoresAgregar(scores, &cant, nombre, puntaje);
+            return MenuGameOver(puntaje);
+        }
+
+        return SALIR;
+}
+
 
 /*    // BAJAR MANUAL
     if(gbt_tecla_presionada(GBTK_s)){
@@ -350,24 +369,4 @@ int Jugar(char *nombre)
         }
     }
 */
-}
 
-        RenderizarJuego(&p, &m, puntaje, proximas, nombre);
-    }
-
-    gbt_temporizador_destruir(temporizador);
-    gbt_temporizador_destruir(tempoRetraso);
-
-    if(gameOver){
-        for(uint8_t i = 0; i < m.fil; i++)
-            free(m.mat[i]);
-        free(m.mat);
-        Score scores[MAX_SCORES];
-        int cant = 0;
-        ScoresCargar(scores, &cant);
-        ScoresAgregar(scores, &cant, nombre, puntaje);
-        return MenuGameOver(puntaje);
-    }
-
-    return SALIR;
-}

@@ -125,16 +125,16 @@ int MenuGameOver(int puntaje)
         DibujarFondo();
 
         // Dibujamos todo antes de volcar
-        DibujarTextoCentrado("GAME OVER", config.ALTO / 4, 4, 0);
-        DibujarTextoCentrado(spuntaje,config.OFFSET_Y,O,0);
+        DibujarTextoCentradoConSombra("GAME OVER", config.ALTO / 4,O,0,N);
+        DibujarTextoCentradoConSombra(spuntaje,config.OFFSET_Y,O,0,N);
 
         // Dibujamos las opciones manualmente sin usar ImprimirMenu
         uint16_t Y = config.ALTO / 2;
         for(uint8_t i = 0; i < cant; i++){
             if(i == opcion)
-                DibujarTextoCentrado(opciones[i], Y, W,0);
+                DibujarTextoCentradoConSombra(opciones[i], Y, W,0,N);
             else
-                DibujarTextoCentrado(opciones[i], Y, 4,0);
+                DibujarTextoCentradoConSombra(opciones[i], Y, 4,0,N);
             Y += config.ALTO / (cant * 2);
         }
 
