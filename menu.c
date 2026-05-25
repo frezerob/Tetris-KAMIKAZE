@@ -220,9 +220,12 @@ void MenuEstadisticas()
     ScoresCargar(scores, &cant);
 
     eGBT_Tecla tecla;
+    uint16_t espaciado;
     char linea[32];
-    int espaciado = TAM_FUENTE8X8 * config.ESCALA_FUENTE + 4;
-
+    if(config.FUENTE == TAM_FUENTE8X8)
+        espaciado = TAM_FUENTE8X8 * config.ESCALA_FUENTE;
+    else
+        espaciado = TAM_FUENTE16x8 * config.ESCALA_FUENTE;
     while(1){
         gbt_borrar_backbuffer(N);
         DibujarFondo();
@@ -231,7 +234,7 @@ void MenuEstadisticas()
 
         for(int i = 0; i < cant; i++){
             sprintf(linea, "%d %s %d", i + 1, scores[i].nombre, scores[i].puntaje);
-            int Y = config.OFFSET_Y + espaciado * 2 + i * espaciado;
+            int Y = config.OFFSET_Y + espaciado * 2 + i * (espaciado);
             if(i == 0)
                 DibujarTextoCentradoConSombra(linea, Y, O, 0, N);
             else

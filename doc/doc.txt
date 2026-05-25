@@ -1,0 +1,318 @@
+================================================================================
+  Tetris-KAMIKAZE - Guia de instalacion
+================================================================================
+
+Proyecto: https://github.com/frezerob/Tetris-KAMIKAZE
+
+Esta guia explica como instalar y ejecutar el proyecto a partir del .zip
+entregado o descargado desde GitHub, integrar la libreria GBT de los profesores
+y dejar el entorno listo en Code::Blocks.
+
+--------------------------------------------------------------------------------
+Requisitos previos
+--------------------------------------------------------------------------------
+
+- Windows (recomendado para este TP)
+- Conexion a Internet
+- Code::Blocks en su ultima version estable, con MinGW (GCC)
+  Descarga: https://www.codeblocks.org/downloads/
+  Elegir el instalador que incluye MinGW (no el que dice "sin MinGW").
+- Espacio en disco para descomprimir el proyecto y la libreria GBT
+
+--------------------------------------------------------------------------------
+Resumen del proceso
+--------------------------------------------------------------------------------
+
+  1. Descargar el .zip del proyecto
+  2. Extraer el .zip en una carpeta
+  3. Abrir la carpeta del proyecto
+  4. Descargar e instalar la libreria GBT (repositorio del curso)
+  5. Abrir Code::Blocks (ultima version)
+  6. Abrir el proyecto Tetris-KAMIKAZE.cbp
+  7. Verificar el linkeo con GBT
+  8. Compilar
+  9. Copiar gbt.dll junto al .exe en bin/Debug/
+
+================================================================================
+PASO 1 - Descargar el proyecto en .zip
+================================================================================
+
+Opcion A - Desde GitHub (navegador):
+
+  1. Entrar a: https://github.com/frezerob/Tetris-KAMIKAZE
+  2. Clic en el boton verde "Code" (Codigo)
+  3. Elegir "Download ZIP"
+  4. Guardar el archivo (ej.: Tetris-KAMIKAZE-main.zip)
+
+Opcion B - Si el proyecto ya te lo entregaron:
+
+  Usar el .zip que te pasaron los profesores o el grupo (mismo contenido).
+
+================================================================================
+PASO 2 - Extraer el .zip
+================================================================================
+
+  1. Ubicar el archivo .zip descargado
+  2. Clic derecho -> "Extraer todo..." (Windows)
+  3. Elegir una ruta sin espacios raros si es posible, por ejemplo:
+       C:\Users\TuUsuario\Documentos\CodeBlocks\Tetris-KAMIKAZE
+  4. Confirmar la extraccion
+
+Tras extraer, suele quedar una carpeta con nombre similar a:
+  Tetris-KAMIKAZE-main
+Renombrarla a Tetris-KAMIKAZE si queres un nombre mas corto (opcional).
+
+================================================================================
+PASO 3 - Abrir la carpeta del proyecto
+================================================================================
+
+  1. Abrir el Explorador de archivos
+  2. Entrar en la carpeta extraida (raiz del proyecto)
+  3. Verificar que existan, entre otros:
+       - Tetris-KAMIKAZE.cbp
+       - main.c
+       - config.txt
+       - lib/GBT_v2026.1C.01/include/   (headers; pueden venir en el zip)
+
+Esa carpeta es la raiz desde la que trabajaras todo el resto de la guia.
+
+================================================================================
+PASO 4 - Descargar e instalar la libreria GBT
+================================================================================
+
+El juego depende de GBT (Graficos, Botones y Temporizadores), libreria de los
+profesores. El .zip del proyecto puede traer solo los headers; los binarios
+(.dll, .a) suelen obtenerse del repositorio o paquete que indique el curso.
+
+  1. Descargar la libreria GBT (version GBT_v2026.1C.01) desde el repositorio
+     correspondiente que indiquen los profesores (ZIP o clone, segun entreguen).
+
+  2. Copiar dentro del proyecto la estructura de carpetas de GBT, de modo que
+     quede asi:
+
+       lib/GBT_v2026.1C.01/include/   <- cabeceras (.h)
+       lib/GBT_v2026.1C.01/lib/       <- libgbt.a
+       lib/GBT_v2026.1C.01/bin/       <- gbt.dll
+
+  3. Comprobar que existan al menos:
+       lib/GBT_v2026.1C.01/lib/libgbt.a
+       lib/GBT_v2026.1C.01/bin/gbt.dll
+
+Sin libgbt.a no compilara (error de enlace). Sin gbt.dll no ejecutara el .exe.
+
+================================================================================
+PASO 5 - Instalar y abrir Code::Blocks
+================================================================================
+
+  1. Instalar Code::Blocks en su ultima version estable con MinGW incluido
+  2. Abrir Code::Blocks
+  3. Verificar que el compilador este detectado (boton "Auto-detect" si hace falta)
+
+================================================================================
+PASO 6 - Abrir el proyecto
+================================================================================
+
+  1. En Code::Blocks: File -> Open...
+  2. Ir a la carpeta extraida del proyecto
+  3. Abrir: Tetris-KAMIKAZE.cbp
+  4. En la barra de herramientas, elegir el target "Debug" (no Release)
+
+El proyecto ya trae parte de la configuracion de GBT en el .cbp; el paso 7
+sirve para verificarla o completarla si el .zip no la trae completa.
+
+================================================================================
+PASO 7 - Configurar el linkeo con GBT (target Debug)
+================================================================================
+
+Menu: Proyecto -> Opciones de compilacion...
+
+En el arbol izquierdo elegir "Debug" (y tambien revisar "Tetris-KAMIKAZE"
+para las opciones globales).
+
+--- Search directories -> Compiler ---
+
+  Agregar:
+    lib/GBT_v2026.1C.01/include
+
+--- Linker settings ---
+
+  Link libraries:  gbt
+  (o en Other linker options:  -lgbt)
+
+--- Search directories -> Linker ---
+
+  Agregar:
+    lib/GBT_v2026.1C.01/lib
+    lib/GBT_v2026.1C.01/bin
+
+--- Parametros de ejecucion (opcional) ---
+
+  Target Debug -> Parametros de ejecucion:  640 480
+  (coinciden con config.txt: RESOLUCION 640 480)
+
+Pulsar "OK" para guardar.
+
+================================================================================
+PASO 8 - Compilar
+================================================================================
+
+  1. Build -> Build (o F9)
+  2. Revisar la pestana "Build log"
+  3. Si termina bien, se genera:
+       bin/Debug/Tetris-KAMIKAZE.exe
+
+Errores tipicos en este paso:
+  - GBT/gbt.h no encontrado -> falta include en Search directories -> Compiler
+  - undefined reference to gbt_* -> falta -lgbt o libgbt.a en lib/.../lib/
+  - cannot find -lgbt -> revisar Linker settings y carpetas del linker
+
+================================================================================
+PASO 9 - Dejar gbt.dll junto al .exe
+================================================================================
+
+ADVERTENCIA: sin este paso el programa compila pero puede no ejecutarse.
+
+  1. Ir a la carpeta:
+       bin/Debug/
+
+  2. Copiar ahi el archivo:
+       gbt.dll
+     desde:
+       lib/GBT_v2026.1C.01/bin/gbt.dll
+
+  3. La carpeta bin/Debug/ debe contener:
+       Tetris-KAMIKAZE.exe
+       gbt.dll
+
+  4. Ejecutar desde Code::Blocks (Run / F10) o doble clic en el .exe
+
+Si aparece "gbt.dll no encontrada", la DLL no esta en la misma carpeta que el .exe.
+
+================================================================================
+Documentacion del juego
+================================================================================
+
+--------------------------------------------------------------------------------
+Flujo general
+--------------------------------------------------------------------------------
+
+  1. Menu principal: JUGAR, ESTADISTICAS, CONFIGURACION, SALIR
+  2. Al elegir JUGAR: pantalla "INGRESE SU NOMBRE" (3 letras)
+  3. Partida de Tetris; al perder: GAME OVER -> REINICIAR o MENU PRINCIPAL
+  4. El puntaje puede guardarse en el top 10 (ESTADISTICAS)
+
+La dificultad, resolucion y modo se ajustan en CONFIGURACION (archivo config.txt).
+
+--------------------------------------------------------------------------------
+Controles - menus y pantallas
+--------------------------------------------------------------------------------
+
+  W / S       Subir / bajar opcion en listas
+  ENTER       Confirmar opcion seleccionada
+  ESCAPE      Volver o salir (segun pantalla)
+
+Pantalla de nombre (antes de jugar):
+  A - Z       Escribir letras (se muestran en mayuscula; maximo 3 caracteres)
+  RETROCESO   Borrar ultima letra
+  ENTER       Confirmar cuando hay 3 letras cargadas
+
+Estadisticas (TOP 10):
+  ENTER   Volver al menu principal
+
+--------------------------------------------------------------------------------
+Controles - durante la partida
+--------------------------------------------------------------------------------
+
+  A           Mover pieza a la izquierda
+  D           Mover pieza a la derecha
+  W           Rotar pieza (sentido horario / derecha)
+  S           Bajar rapido: si la pieza puede bajar, gana puntos; si toca
+              el suelo o otra pieza, se fija al instante y aparece la siguiente
+  ESCAPE      Pausa -> REANUDAR o SALIR
+
+La caida automatica sigue su temporizador; al apoyarse hay un breve retraso
+antes de fijar la pieza (salvo que uses S para fijarla antes).
+
+--------------------------------------------------------------------------------
+Dificultades (CONFIGURACION o config.txt)
+--------------------------------------------------------------------------------
+
+  FACIL       Caida mas lenta (intervalo base mayor)
+  NORMAL      Velocidad intermedia
+  DIFICIL     Caida mas rapida
+
+Cada 10 piezas colocadas la velocidad aumenta un poco (hasta el limite del
+sistema de niveles).
+
+Valores base del temporizador de caida (sin cheat), en milisegundos:
+  FACIL   1000
+  NORMAL   500
+  DIFICIL  200
+
+--------------------------------------------------------------------------------
+Cheat: nombre "GOD"
+--------------------------------------------------------------------------------
+
+Al ingresar el nombre GOD en la pantalla inicial,
+se activa un cheat oculto para esa partida.
+
+  Como activarlo:
+    - En "INGRESE SU NOMBRE", escribir GOD y pulsar ENTER
+
+  Efecto:
+    - Mitad de velocidad inicial en cualquier dificultad (FACIL, NORMAL o DIFICIL):
+      la partida comienza cayendo el doble de lento que lo normal para esa dificultad
+    - Solo afecta la velocidad al empezar; cada 10 piezas la velocidad sube con la
+      progresion habitual de niveles
+
+  Nota: el cheat no se anuncia en pantalla; solo quien conozca el codigo lo usa.
+
+--------------------------------------------------------------------------------
+Configuracion adicional (menu CONFIGURACION)
+--------------------------------------------------------------------------------
+
+  DIFICULTAD              Rotar entre FACIL, NORMAL, DIFICIL
+  RESOLUCION              320x200 o 640x480 (reinicia la ventana al cambiar)
+  MODO DE JUEGO           CLASICO (10 columnas) o DELUXE
+  CANTIDAD DE COLUMNAS    Solo en DELUXE (8 a 16 columnas)
+  VOLVER                  Regresa al menu principal
+
+Los cambios se guardan en config.txt en la carpeta del proyecto.
+
+================================================================================
+Anexo A - Alternativa con Git (opcional)
+================================================================================
+
+Si preferis Git en lugar del .zip:
+
+  git clone https://github.com/frezerob/Tetris-KAMIKAZE.git
+
+Luego seguir desde el PASO 3 (abrir carpeta) en adelante.
+
+Para commits o push, configurar antes:
+
+  git config --global user.name "Tu Nombre"
+  git config --global user.email "tu_correo@ejemplo.com"
+
+En GitHub por HTTPS, usar token (PAT) como contrasena, no la clave de la web.
+
+================================================================================
+Anexo B - Problemas frecuentes
+================================================================================
+
+- Code::Blocks sin compilador:
+  Reinstalar con MinGW incluido o detectar GCC en Settings -> Compiler.
+
+- El .zip no trae libgbt.a ni gbt.dll:
+  Completar el PASO 4 con el paquete GBT del repositorio del curso.
+
+- Compila pero no corre:
+  Copiar gbt.dll a bin/Debug/ (PASO 9).
+
+- GBT/gbt.h: No such file or directory:
+  PASO 7 -> Search directories -> Compiler -> lib/GBT_v2026.1C.01/include
+
+- Errores gbt_* al enlazar:
+  PASO 7 -> -lgbt y directorios lib y bin de GBT; verificar libgbt.a.
+
+================================================================================

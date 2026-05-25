@@ -131,3 +131,10 @@ int EliminarFilasCompletasConPuntaje(matrix* m)
     }
     return filasEliminadas > 0 ? filasEliminadas*100 + (filasEliminadas-1)*100 : 0;
 }
+
+void MatrizBorrar(matrix *m)
+{
+    for(uint8_t i = 0; i < m->fil; i++)
+        free(m->mat[i]);
+    free(m->mat);
+}

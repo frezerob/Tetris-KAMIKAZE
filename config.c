@@ -70,8 +70,8 @@ void AplicarConfig(uint16_t res){
         config.ALTO = 480;
         config.ESCALA = 1.5;
         config.TAM_CELDA = 16;
-        config.ESCALA_FUENTE = 2.2;
-        config.FUENTE = fuente_8x16;
+        config.ESCALA_FUENTE = 1.8;
+        config.FUENTE = fuente_16x8;
     }
     else{
         config.ANCHO = 320;

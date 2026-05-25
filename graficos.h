@@ -22,7 +22,7 @@ void DibujarTextoEnRecuadro(char* texto, uint16_t centroX, uint16_t centroY, uin
 
 void DibujarBitMap(const uint8_t bitmap[], uint16_t X, uint16_t Y, uint8_t color);
 void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t color);
-void DibujarBitMap8x16(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t color);
+void DibujarBitMap16x8(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t color);
 //
 void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color);
 void DibujarProximaPieza(uint8_t (*forma)[16], uint16_t X, uint16_t Y);
