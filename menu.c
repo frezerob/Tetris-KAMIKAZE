@@ -2,6 +2,7 @@
 #include "menu.h"
 #include "graficos.h"
 #include "score.h"
+#include "partida.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -17,25 +18,26 @@ void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opcione
 
 int MenuIniciar(TDAconfig cfg)
 {
-    char* opciones_menu[] = {"JUGAR","ESTADISTICAS","CONFIGURACION", "SALIR"};
-    uint8_t cant = 4;
+    int hayPartida = PartidaExiste();
+    char* sinPartida[] = {"JUGAR", "ESTADISTICAS", "CONFIGURACION", "SALIR"};
+    char* conPartida[] = {"JUGAR", "CONTINUAR", "ESTADISTICAS", "CONFIGURACION", "SALIR"};
+    char** opciones = hayPartida ? conPartida : sinPartida;
+    uint8_t cant = hayPartida ? 5 : 4;
     uint8_t opcion = 0;
     eGBT_Tecla tecla;
 
     while(1){
-        ImprimirMenu(opcion, opciones_menu, cant);
-
+        ImprimirMenu(opcion, opciones, cant);
         gbt_procesar_entrada();
-
-        CalcularOpcion(&tecla,&opcion,cant);
+        CalcularOpcion(&tecla, &opcion, cant);
 
         if(tecla == GBTK_ENTER){
             if(opcion == 0) return 0;
-            if(opcion == 1) MenuEstadisticas();
-            if(opcion == 2) MenuConfiguracion();
-            if(opcion == 3) return SALIR;
+            if(hayPartida && opcion == 1) return CONTINUAR;
+            if(opcion == (hayPartida ? 2 : 1)) MenuEstadisticas();
+            if(opcion == (hayPartida ? 3 : 2)) MenuConfiguracion();
+            if(opcion == (hayPartida ? 4 : 3)) return SALIR;
         }
-
         if(tecla == GBTK_ESCAPE)
             return SALIR;
 
@@ -45,31 +47,29 @@ int MenuIniciar(TDAconfig cfg)
 
 void MenuConfiguracion()
 {
-    // char* opcMenu[] = {"DIFICULTAD", "RESOLUCION", "VOLVER"}; ???
-    uint8_t cant = 5;
+    uint8_t cant = 6;
     uint8_t opcion = 0;
     uint8_t corriendo = 1;
+    char lineaPaleta[32];
     eGBT_Tecla tecla;
-
     char* difs[] = {"FACIL", "NORMAL", "DIFICIL"};
     char* ress[] = {"320X200", "640X480"};
+    char* nombresPaleta[] = {"ORIGINAL", "LCD", "MONOCROMO"};
     char *modos[] = {"CLASICO", "DELUXE"};
     while(corriendo){
-        // Mostramos la opcion seleccionada actualmente en cada fila
         char lineaDif[32], lineaRes[32], modoJuego[32], colTablero[32];
         sprintf(lineaDif, "DIFICULTAD %s", difs[config.DIFICULTAD]);
+        sprintf(lineaPaleta, "PALETA %s", nombresPaleta[config.PALETA]);
         sprintf(lineaRes, "RESOLUCION %s", ress[config.ANCHO == 640 ? 0 : 1]);
         sprintf(modoJuego, "MODO DE JUEGO %s",modos[config.MODO]);
         sprintf(colTablero,"CANTIDAD DE COLUMNAS %d",config.COL_TABLERO);
-        char* opcMostrar[] = {lineaDif, lineaRes,modoJuego,colTablero, "VOLVER"};
-        ImprimirMenu(opcion, opcMostrar, cant);
+        char* opcMostrar[] = {lineaDif, lineaRes, modoJuego, colTablero, lineaPaleta, "VOLVER"};
+
 
         gbt_procesar_entrada();
-
         CalcularOpcion(&tecla, &opcion, cant);
+        ImprimirMenu(opcion, opcMostrar, cant);
 
-
-        // Opcion de cambio de resolucion
         if(tecla == GBTK_ENTER){
             if(opcion == 0){
                 config.DIFICULTAD = (config.DIFICULTAD + 1) % 3;
@@ -84,10 +84,7 @@ void MenuConfiguracion()
                 }
                 config.OFFSET_X = 2 * config.TAM_CELDA;
                 config.OFFSET_Y = 4 * config.TAM_CELDA;
-
-
                 ConfigGuardar(CONFIG_FILE);
-
                 gbt_destruir_ventana();
                 gbt_crear_ventana(TITULO, config.ANCHO, config.ALTO, config.ESCALA);
             }
@@ -101,17 +98,18 @@ void MenuConfiguracion()
                     config.COL_TABLERO = 8;
             }
             else if(opcion == 4){
-                break;
+                config.PALETA = (config.PALETA + 1) % 3;
+                AplicarPaleta(config.PALETA);
+                ConfigGuardar(CONFIG_FILE);
             }
-
+            else if(opcion == 5)
+                corriendo = 0;
         }
         if(tecla == GBTK_ESCAPE)
             corriendo = 0;
-
         gbt_esperar(16);
     }
 }
-
 
 
 int MenuGameOver(int puntaje)
@@ -126,11 +124,9 @@ int MenuGameOver(int puntaje)
         gbt_borrar_backbuffer(N);
         DibujarFondo();
 
-        // Dibujamos todo antes de volcar
         DibujarTextoCentradoConSombra("GAME OVER", config.ALTO / 4,O,0,N);
         DibujarTextoCentradoConSombra(spuntaje,config.OFFSET_Y,O,0,N);
 
-        // Dibujamos las opciones manualmente sin usar ImprimirMenu
         uint16_t Y = config.ALTO / 2;
         for(uint8_t i = 0; i < cant; i++){
             if(i == opcion)
@@ -159,22 +155,21 @@ int8_t MenuPausa()
 {
     eGBT_Tecla tecla;
     uint8_t opcion = 0;
-    while(1)
-    {
+    char* opciones[] = {"REANUDAR", "GUARDAR Y SALIR", "SALIR SIN GUARDAR"};
 
-        char *opciones[] = {"REANUDAR", "SALIR"};
-        ImprimirMenu(opcion,opciones,2);
-
-
+    while(1){
+        ImprimirMenu(opcion, opciones, 3);
         gbt_procesar_entrada();
-        CalcularOpcion(&tecla,&opcion,2);
+        CalcularOpcion(&tecla, &opcion, 3);
 
+        if(tecla == GBTK_ENTER){
+            if(opcion == 0) return REANUDAR;
+            if(opcion == 1) return GUARDAR_Y_SALIR;
+            if(opcion == 2) return SALIR;
+        }
+        if(tecla == GBTK_ESCAPE)
+            return REANUDAR;
 
-        if(tecla == GBTK_ENTER)
-            switch(opcion){
-                case 0: return REANUDAR; break;
-                case 1: return SALIR; break;
-            }
         gbt_esperar(16);
     }
 }
@@ -191,12 +186,11 @@ char* PantallaIngresoNombre()
 
         if(tecla >= GBTK_a && tecla <= GBTK_z && CantidadChar < 3)
         {
-            // Si GBTK_a equivale a la 'A' o 'a' física, calculamos el desplazamiento:
             char caracter = (char)tecla - 32;
 
             nombre[CantidadChar] = caracter;
             CantidadChar++;
-            nombre[CantidadChar] = '\0'; // Aseguramos siempre el fin de string
+            nombre[CantidadChar] = '\0';
         }
         else if(tecla == GBTK_RETROCESO){
             if(CantidadChar > 0){
@@ -214,7 +208,6 @@ char* PantallaIngresoNombre()
         DibujarTextoCentradoConSombra(nombre,config.OFFSET_Y*3,O,0,N);
         gbt_volcar_backbuffer();
 
-        //Espera para no sobrecargar CPU
         gbt_esperar(16);
     }
 

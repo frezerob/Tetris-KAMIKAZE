@@ -7,6 +7,7 @@
 void DibujarCelda(uint16_t X, uint16_t Y, uint8_t color, uint8_t TAMANIO, eTexturas Textura);
 void DibujarTablero(matrix* m, uint16_t X, uint16_t Y);
 void DibujarPieza(PiezaActiva* p);
+void AplicarPaleta(int indicePaleta);
 
 
 //TEXTO

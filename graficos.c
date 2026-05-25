@@ -33,14 +33,12 @@ void DibujarPieza(PiezaActiva* p)
             if(config.MODO == DELUXE){
 
                 if (col < 0) {
-                    // Si se fue por la izquierda (ej: -1), aparece a la derecha (9)
                     col += config.COL_TABLERO;
                 }
                 else if (col >= config.COL_TABLERO) {
-                    // Si se fue por la derecha (ej: 10), aparece a la izquierda (0)
                     col-=config.COL_TABLERO;
             }
-                DibujarCelda(config.OFFSET_X + col * config.TAM_CELDA,  // offset solo acá
+                DibujarCelda(config.OFFSET_X + col * config.TAM_CELDA,
                   config.OFFSET_Y + fil  * config.TAM_CELDA,
                   p->forma[p->rotacion][i * ORDEN + j],
                   config.TAM_CELDA,
@@ -66,14 +64,13 @@ const uint8_t texturas[CANT_TEXTURAS][8][8] =
 {
     //BLOQUE
     {
-        {2,2,2,2,2,2,2,2}, // Fila superior: Brillo Claro (color + 2)
-        {2,0,0,0,0,0,0,1}, // Izquierda: Brillo (color + 2) | Derecha: Sombra (color + 1)
-        {2,0,0,0,0,0,0,1}, // Centro: Cuerpo normal de la pieza (color)
+        {2,2,2,2,2,2,2,2},
         {2,0,0,0,0,0,0,1},
         {2,0,0,0,0,0,0,1},
         {2,0,0,0,0,0,0,1},
         {2,0,0,0,0,0,0,1},
-        {1,1,1,1,1,1,1,1}  // Fila inferior: Sombra Oscura (color + 1)
+        {2,0,0,0,0,0,0,1},
+        {1,1,1,1,1,1,1,1}
     },
 
     //PLANO
@@ -82,7 +79,7 @@ const uint8_t texturas[CANT_TEXTURAS][8][8] =
         {0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}
     },
 
-    //BORDE -> Textura de ladrillo estático para las paredes del tablero
+    //BORDE
     {
         {BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO},
         {BRD_CLARO, BRD,       BRD,       BRD,       BRD,       BRD,       BRD,       BRD_OSCURO},
@@ -171,7 +168,6 @@ void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t c
                 uint16_t x_pixel = X + c * config.ESCALA_FUENTE;
                 uint16_t y_pixel = Y + f * config.ESCALA_FUENTE;
 
-                // Dibujamos un bloque sólido del tamaño de config.ESCALA_FUENTE|
                 for(uint16_t sy = 0; sy < config.ESCALA_FUENTE; sy++) {
                     for(uint16_t sx = 0; sx < config.ESCALA_FUENTE; sx++) {
                         gbt_dibujar_pixel(x_pixel + sx, y_pixel + sy, color);
@@ -196,7 +192,6 @@ void DibujarBitMap16x8(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t
                 uint16_t x_pixel = X + c * config.ESCALA_FUENTE;
                 uint16_t y_pixel = Y + f * config.ESCALA_FUENTE;
 
-                // Dibujamos un bloque sólido del tamaño de config.ESCALA_FUENTE|
                 for(uint16_t sy = 0; sy < config.ESCALA_FUENTE; sy++) {
                     for(uint16_t sx = 0; sx < config.ESCALA_FUENTE; sx++) {
                         gbt_dibujar_pixel(x_pixel + sx, y_pixel + sy, color);
@@ -212,7 +207,7 @@ void DibujarBitMap16x8(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t
 void DibujarLetra(char c, uint16_t X, uint16_t Y, uint8_t color)
 {
     if(c < 'A' || c > 'Z') return;
-    uint8_t indice = c - 'A';
+      uint8_t indice = c - 'A';
 
     if(config.FUENTE == fuente_8x8) {
         DibujarBitMap(fuente8x8[indice], X, Y, color);
@@ -324,11 +319,9 @@ void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char
 
     DibujarTablero(m,0,0);
     DibujarPieza(p);
-    //RECTANGULO DE ESTADISTICAS
     DibujarRectangulo(config.OFFSET_X + (config.COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
     DibujarPuntaje(puntaje, config.OFFSET_X + (config.COL_TABLERO + 4) * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE"), config.OFFSET_Y + config.TAM_CELDA/2, W);
     DibujarTextoCentradoConSombra("PUNTAJE",config.OFFSET_Y + config.TAM_CELDA/2,W,-config.OFFSET_X -5,T);
-    //RECTANGULO TITULO
     DibujarRectangulo(config.OFFSET_X,config.TAM_CELDA,26,2,N,PLANO);
     DibujarTextoConSombra("TETRIS KAMIKAZE",config.OFFSET_X,config.TAM_CELDA * 1.5, S,T);
     DibujarTextoConSombra(nombre,config.OFFSET_X*10,config.TAM_CELDA * 1.5,S,T);
@@ -383,4 +376,101 @@ void DibujarTextoCentradoConSombra(char* texto, uint16_t Y, uint8_t color, uint1
 {
     uint16_t X = (config.ANCHO - CalcularAnchoTexto(texto))/2 + OFFSET_X;
     DibujarTextoConSombra(texto,X,Y,color, colorSombra);
+}
+
+void AplicarPaleta(int indicePaleta)
+{
+    tGBT_ColorRGB paletas[3][PALETA_MAX_COLORES] = {
+
+        {
+            {0x00, 0x00, 0x00}, // N
+            {0x00, 0xFF, 0xFF}, // I
+            {0x00, 0xAA, 0xAA}, // I_OSCURO
+            {0x99, 0xFF, 0xFF}, // I_CLARO
+            {0xFF, 0xFF, 0x00}, // O
+            {0xAA, 0xAA, 0x00}, // O_OSCURO
+            {0xFF, 0xFF, 0x99}, // O_CLARO
+            {0x80, 0x00, 0x80}, // T
+            {0x55, 0x00, 0x55}, // T_OSCURO
+            {0xCC, 0x99, 0xCC}, // T_CLARO
+            {0x00, 0xFF, 0x00}, // S
+            {0x00, 0xAA, 0x00}, // S_OSCURO
+            {0x99, 0xFF, 0x99}, // S_CLARO
+            {0xFF, 0x00, 0x00}, // Z
+            {0xAA, 0x00, 0x00}, // Z_OSCURO
+            {0xFF, 0x99, 0x99}, // Z_CLARO
+            {0x00, 0x00, 0xFF}, // J
+            {0x00, 0x00, 0xAA}, // J_OSCURO
+            {0x99, 0x99, 0xFF}, // J_CLARO
+            {0xFF, 0xA5, 0x00}, // L
+            {0xAA, 0x6E, 0x00}, // L_OSCURO
+            {0xFF, 0xD1, 0x99}, // L_CLARO
+            {0x80, 0x80, 0x80}, // BRD
+            {0x55, 0x55, 0x55}, // BRD_OSCURO
+            {0xCC, 0xCC, 0xCC}, // BRD_CLARO
+            {0xFF, 0xFF, 0xFF}, // W
+            {0x01, 0x01, 0x01}, // TR
+        },
+        {
+            {0x0F, 0x38, 0x0F}, // N
+            {0x30, 0x62, 0x30}, // I
+            {0x20, 0x52, 0x20}, // I_OSCURO
+            {0x40, 0x72, 0x40}, // I_CLARO
+            {0x8B, 0xAC, 0x0F}, // O
+            {0x6B, 0x8C, 0x00}, // O_OSCURO
+            {0xAB, 0xCC, 0x2F}, // O_CLARO
+            {0x30, 0x62, 0x30}, // T
+            {0x20, 0x52, 0x20}, // T_OSCURO
+            {0x40, 0x72, 0x40}, // T_CLARO
+            {0x8B, 0xAC, 0x0F}, // S
+            {0x6B, 0x8C, 0x00}, // S_OSCURO
+            {0xAB, 0xCC, 0x2F}, // S_CLARO
+            {0x0F, 0x38, 0x0F}, // Z
+            {0x00, 0x28, 0x00}, // Z_OSCURO
+            {0x2F, 0x58, 0x2F}, // Z_CLARO
+            {0x30, 0x62, 0x30}, // J
+            {0x20, 0x52, 0x20}, // J_OSCURO
+            {0x40, 0x72, 0x40}, // J_CLARO
+            {0x8B, 0xAC, 0x0F}, // L
+            {0x6B, 0x8C, 0x00}, // L_OSCURO
+            {0xAB, 0xCC, 0x2F}, // L_CLARO
+            {0x30, 0x62, 0x30}, // BRD
+            {0x20, 0x52, 0x20}, // BRD_OSCURO
+            {0x40, 0x72, 0x40}, // BRD_CLARO
+            {0x9B, 0xBC, 0x0F}, // W
+            {0x01, 0x01, 0x01}, // TR
+        },
+
+        {
+            {0x00, 0x00, 0x00}, // N
+            {0xDD, 0xDD, 0xDD}, // I
+            {0xAA, 0xAA, 0xAA}, // I_OSCURO
+            {0xFF, 0xFF, 0xFF}, // I_CLARO
+            {0xBB, 0xBB, 0xBB}, // O
+            {0x88, 0x88, 0x88}, // O_OSCURO
+            {0xEE, 0xEE, 0xEE}, // O_CLARO
+            {0x99, 0x99, 0x99}, // T
+            {0x66, 0x66, 0x66}, // T_OSCURO
+            {0xCC, 0xCC, 0xCC}, // T_CLARO
+            {0xDD, 0xDD, 0xDD}, // S
+            {0xAA, 0xAA, 0xAA}, // S_OSCURO
+            {0xFF, 0xFF, 0xFF}, // S_CLARO
+            {0x77, 0x77, 0x77}, // Z
+            {0x44, 0x44, 0x44}, // Z_OSCURO
+            {0xAA, 0xAA, 0xAA}, // Z_CLARO
+            {0xBB, 0xBB, 0xBB}, // J
+            {0x88, 0x88, 0x88}, // J_OSCURO
+            {0xEE, 0xEE, 0xEE}, // J_CLARO
+            {0x99, 0x99, 0x99}, // L
+            {0x66, 0x66, 0x66}, // L_OSCURO
+            {0xCC, 0xCC, 0xCC}, // L_CLARO
+            {0x55, 0x55, 0x55}, // BRD
+            {0x33, 0x33, 0x33}, // BRD_OSCURO
+            {0x77, 0x77, 0x77}, // BRD_CLARO
+            {0xFF, 0xFF, 0xFF}, // W
+            {0x01, 0x01, 0x01}, // TR
+        }
+    };
+
+    gbt_aplicar_paleta(paletas[indicePaleta], PALETA_MAX_COLORES, GBT_FORMATO_888);
 }

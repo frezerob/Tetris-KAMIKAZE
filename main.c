@@ -21,9 +21,11 @@ Entrega: No
 #include "graficos.h"
 #include "config.h"
 #include "score.h"
+#include "partida.h"
+#include "core.h"
+#include "juego.h"
 
 
-int Jugar(char *nombre);
 int IniciarSistema(int argc, char* argv[]);
 
 int main(int argc, char* argv[])
@@ -35,23 +37,48 @@ int main(int argc, char* argv[])
     int ret = MenuIniciar(config);
     if(ret == SALIR) return 0;
 
-    char* nombre = PantallaIngresoNombre();
+    char* nombre = NULL;
+
+    if(ret == CONTINUAR){
+        EstadoPartida estado;
+        PartidaCargar(&estado);
+        ret = JugarDesdeEstado(&estado);
+    } else {
+        nombre = PantallaIngresoNombre();
+    }
 
     while(1){
-        ret = Jugar(nombre);
+        if(ret == SALIR) break;
 
-        if(ret == SALIR)
-            break;
-        if(ret == MENU_PRINCIPAL){
+        if(ret == 0 || ret == REINICIAR){
+            if(nombre == NULL)
+                nombre = PantallaIngresoNombre();
+            ret = Jugar(nombre);
+        }
+        else if(ret == CONTINUAR){
+            EstadoPartida estado;
+            PartidaCargar(&estado);
+            ret = JugarDesdeEstado(&estado);
+        }
+        else if(ret == MENU_PRINCIPAL){
+            if(nombre) free(nombre);
+            nombre = NULL;
             ret = MenuIniciar(config);
             if(ret == SALIR) break;
             free(nombre);
-            nombre = PantallaIngresoNombre();
-            // si ret == 0 (JUGAR) vuelve a Jugar()
+            if(ret == CONTINUAR){
+                EstadoPartida estado;
+                PartidaCargar(&estado);
+                ret = JugarDesdeEstado(&estado);
+            } else {
+                nombre = PantallaIngresoNombre();
+                ret = Jugar(nombre);
+            }
         }
-        // si ret == REINICIAR vuelve directo a Jugar()
+        else break;
     }
-    free(nombre);
+
+    if(nombre) free(nombre);
     gbt_destruir_ventana();
     return 0;
 }
@@ -62,35 +89,6 @@ int IniciarSistema(int argc, char* argv[])
     config.OFFSET_X = 2 * config.TAM_CELDA;
     config.OFFSET_Y = 4 * config.TAM_CELDA;
 
-    tGBT_ColorRGB paleta[PALETA_MAX_COLORES] = {
-        {0x00, 0x00, 0x00}, // N
-        {0x00, 0xFF, 0xFF}, // I
-        {0x00, 0xAA, 0xAA}, // I_OSCURO
-        {0x99, 0xFF, 0xFF}, // I_CLARO
-        {0xFF, 0xFF, 0x00}, // O
-        {0xAA, 0xAA, 0x00}, // O_OSCURO
-        {0xFF, 0xFF, 0x99}, // O_CLARO
-        {0x80, 0x00, 0x80}, // T
-        {0x55, 0x00, 0x55}, // T_OSCURO
-        {0xCC, 0x99, 0xCC}, // T_CLARO
-        {0x00, 0xFF, 0x00}, // S
-        {0x00, 0xAA, 0x00}, // S_OSCURO
-        {0x99, 0xFF, 0x99}, // S_CLARO
-        {0xFF, 0x00, 0x00}, // Z
-        {0xAA, 0x00, 0x00}, // Z_OSCURO
-        {0xFF, 0x99, 0x99}, // Z_CLARO
-        {0x00, 0x00, 0xFF}, // J
-        {0x00, 0x00, 0xAA}, // J_OSCURO
-        {0x99, 0x99, 0xFF}, // J_CLARO
-        {0xFF, 0xA5, 0x00}, // L
-        {0xAA, 0x6E, 0x00}, // L_OSCURO
-        {0xFF, 0xD1, 0x99}, // L_CLARO
-        {0x80, 0x80, 0x80}, // BRD
-        {0x55, 0x55, 0x55}, // BRD_OSCURO
-        {0xCC, 0xCC, 0xCC}, // BRD_CLARO
-        {0xFF, 0xFF, 0xFF}, // W
-        {0x01, 0x01, 0x01}, // TR
-    };
     if(gbt_iniciar() != 0){
         printf("%s", gbt_obtener_log());
         return INIT_ERR;
@@ -99,14 +97,8 @@ int IniciarSistema(int argc, char* argv[])
         printf("%s", gbt_obtener_log());
         return INIT_ERR;
     }
-    if(gbt_aplicar_paleta(paleta, PALETA_MAX_COLORES, GBT_FORMATO_888) != 0){
-        printf("%s", gbt_obtener_log());
-        return INIT_ERR;
-    }
 
-    config.FIL_TABLERO = 20;
-    config.COL_TABLERO = 10;
-
+    AplicarPaleta(config.PALETA);
     return 0;
 }
 
