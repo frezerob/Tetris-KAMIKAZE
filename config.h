@@ -24,7 +24,7 @@ typedef struct{
 
 extern TDAconfig config;
 
-int ConfigCargar(char* archivo);
+int ConfigCargar(char* archivo,int argc, char* argv[]);
 int ConfigGuardar(char* archivo);
 void ConfigAplicarResolucion();
 

@@ -14,8 +14,21 @@ void ConfigAplicarResolucion()
     }
 }
 
-int ConfigCargar(char* archivo)
+int ConfigCargar(char* archivo, int argc, char* argv[])
 {
+
+    if (argc >= 4) {
+        config.ANCHO = atoi(argv[1]);
+        config.ALTO = atoi(argv[2]);
+
+        ConfigAplicarResolucion();
+
+        config.ESCALA = atoi(argv[3]);
+
+        ConfigGuardar(archivo);
+        return 1;
+    }
+
     FILE* f = fopen(archivo, "r");
     if(!f){
         AplicarConfig(320);
@@ -45,6 +58,8 @@ int ConfigCargar(char* archivo)
 
     fclose(f);
     AplicarConfig(config.ANCHO);
+
+
     return 0;
 }
 
