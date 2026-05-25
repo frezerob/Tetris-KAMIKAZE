@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 
 int IniciarSistema(int argc, char* argv[])
 {
-    ConfigCargar(CONFIG_FILE);
+    ConfigCargar(CONFIG_FILE,argc,argv);
     config.OFFSET_X = 2 * config.TAM_CELDA;
     config.OFFSET_Y = 4 * config.TAM_CELDA;
 
