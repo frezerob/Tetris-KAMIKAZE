@@ -9,9 +9,7 @@ void semilla()
 {
     srand(time(NULL));
 }
-/*
-* Genera una pieza al azar
-*/
+
 uint8_t generarPiezaAleatoria() {
     uint8_t Aux;
 
@@ -98,10 +96,10 @@ uint8_t PIEZA_C[4][16] = {
 };
 
 uint8_t PIEZA_H[4][16] = {
-    {O,TR,O,TR, O,O,O,TR, O,TR,O,TR, TR,TR,TR,TR},  // XXX / X.. / XX. / X..
-    {O,O,O,TR, TR,O,TR,TR, O,O,O,TR, TR,TR,TR,TR}, // XX. / .X. / XX. / ...
-    {O,TR,O,TR, O,O,O,TR, O,TR,O,TR, TR,TR,TR,TR},  // .XX / ..X / XX. / .X.
-    {O,O,O,TR, TR,O,TR,TR, O,O,O,TR, TR,TR,TR,TR},  // ... / XX. / .X. / XX.
+    {O,TR,O,TR, O,O,O,TR, O,TR,O,TR, TR,TR,TR,TR},
+    {O,O,O,TR, TR,O,TR,TR, O,O,O,TR, TR,TR,TR,TR},
+    {O,TR,O,TR, O,O,O,TR, O,TR,O,TR, TR,TR,TR,TR},
+    {O,O,O,TR, TR,O,TR,TR, O,O,O,TR, TR,TR,TR,TR},
 };
 
 uint8_t (*FORMAS[11])[16] = {

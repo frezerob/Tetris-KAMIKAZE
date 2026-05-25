@@ -10,9 +10,6 @@ typedef struct{
     int col;
 }matrix;
 
-
-
-
 uint8_t MatrizIniciar(matrix* m, int fil, int col);
 void MatrizMostrar(matrix* m);
 void MatrizVaciarFil(matrix *m, uint8_t row);

@@ -29,11 +29,9 @@ void ScoresGuardar(Score scores[], int cant)
 
 void ScoresAgregar(Score scores[], int* cant, char* nombre, int puntaje)
 {
-    // Si hay lugar o el puntaje es mayor al último
     if(*cant < MAX_SCORES || puntaje > scores[*cant - 1].puntaje){
         int pos = *cant < MAX_SCORES ? *cant : MAX_SCORES - 1;
 
-        // Buscamos donde insertar
         for(int i = 0; i < *cant && i < MAX_SCORES; i++){
             if(puntaje > scores[i].puntaje){
                 pos = i;
@@ -41,11 +39,9 @@ void ScoresAgregar(Score scores[], int* cant, char* nombre, int puntaje)
             }
         }
 
-        // Corremos los demás hacia abajo
         for(int i = MAX_SCORES - 1; i > pos; i--)
             scores[i] = scores[i-1];
 
-        // Insertamos
         strncpy(scores[pos].nombre, nombre, MAX_NOMBRE);
         scores[pos].puntaje = puntaje;
 

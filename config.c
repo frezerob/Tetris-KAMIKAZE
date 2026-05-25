@@ -1,7 +1,7 @@
 #include "config.h"
-#include <stdio.h>   // FILE, fprintf, fscanf, fopen, fclose
-#include <stdlib.h>  // atoi
-#include <string.h>  // strcmp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 TDAconfig config;
 
@@ -18,7 +18,6 @@ int ConfigCargar(char* archivo)
 {
     FILE* f = fopen(archivo, "r");
     if(!f){
-        // No existe, creamos con valores por defecto
         AplicarConfig(320);
         ConfigGuardar(archivo);
         return 0;
@@ -82,8 +81,7 @@ void AplicarConfig(uint16_t res){
         config.ESCALA_FUENTE = 1;
         config.FUENTE = fuente_8x8;
     }
-    // agregás estas dos líneas:
     config.FIL_TABLERO = 20;
-    if(config.COL_TABLERO == 0)  // solo si no estaba cargado
+    if(config.COL_TABLERO == 0)
         config.COL_TABLERO = 10;
 }

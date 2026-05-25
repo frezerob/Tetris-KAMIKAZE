@@ -124,11 +124,9 @@ int MenuGameOver(int puntaje)
         gbt_borrar_backbuffer(N);
         DibujarFondo();
 
-        // Dibujamos todo antes de volcar
         DibujarTextoCentradoConSombra("GAME OVER", config.ALTO / 4,O,0,N);
         DibujarTextoCentradoConSombra(spuntaje,config.OFFSET_Y,O,0,N);
 
-        // Dibujamos las opciones manualmente sin usar ImprimirMenu
         uint16_t Y = config.ALTO / 2;
         for(uint8_t i = 0; i < cant; i++){
             if(i == opcion)
@@ -188,12 +186,11 @@ char* PantallaIngresoNombre()
 
         if(tecla >= GBTK_a && tecla <= GBTK_z && CantidadChar < 3)
         {
-            // Si GBTK_a equivale a la 'A' o 'a' física, calculamos el desplazamiento:
             char caracter = (char)tecla - 32;
 
             nombre[CantidadChar] = caracter;
             CantidadChar++;
-            nombre[CantidadChar] = '\0'; // Aseguramos siempre el fin de string
+            nombre[CantidadChar] = '\0';
         }
         else if(tecla == GBTK_RETROCESO){
             if(CantidadChar > 0){
@@ -211,7 +208,6 @@ char* PantallaIngresoNombre()
         DibujarTextoCentradoConSombra(nombre,config.OFFSET_Y*3,O,0,N);
         gbt_volcar_backbuffer();
 
-        //Espera para no sobrecargar CPU
         gbt_esperar(16);
     }
 

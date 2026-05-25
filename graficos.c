@@ -33,14 +33,12 @@ void DibujarPieza(PiezaActiva* p)
             if(config.MODO == DELUXE){
 
                 if (col < 0) {
-                    // Si se fue por la izquierda (ej: -1), aparece a la derecha (9)
                     col += config.COL_TABLERO;
                 }
                 else if (col >= config.COL_TABLERO) {
-                    // Si se fue por la derecha (ej: 10), aparece a la izquierda (0)
                     col-=config.COL_TABLERO;
             }
-                DibujarCelda(config.OFFSET_X + col * config.TAM_CELDA,  // offset solo acá
+                DibujarCelda(config.OFFSET_X + col * config.TAM_CELDA,
                   config.OFFSET_Y + fil  * config.TAM_CELDA,
                   p->forma[p->rotacion][i * ORDEN + j],
                   config.TAM_CELDA,
@@ -66,14 +64,13 @@ const uint8_t texturas[CANT_TEXTURAS][8][8] =
 {
     //BLOQUE
     {
-        {2,2,2,2,2,2,2,2}, // Fila superior: Brillo Claro (color + 2)
-        {2,0,0,0,0,0,0,1}, // Izquierda: Brillo (color + 2) | Derecha: Sombra (color + 1)
-        {2,0,0,0,0,0,0,1}, // Centro: Cuerpo normal de la pieza (color)
+        {2,2,2,2,2,2,2,2},
         {2,0,0,0,0,0,0,1},
         {2,0,0,0,0,0,0,1},
         {2,0,0,0,0,0,0,1},
         {2,0,0,0,0,0,0,1},
-        {1,1,1,1,1,1,1,1}  // Fila inferior: Sombra Oscura (color + 1)
+        {2,0,0,0,0,0,0,1},
+        {1,1,1,1,1,1,1,1}
     },
 
     //PLANO
@@ -82,7 +79,7 @@ const uint8_t texturas[CANT_TEXTURAS][8][8] =
         {0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}
     },
 
-    //BORDE -> Textura de ladrillo estático para las paredes del tablero
+    //BORDE
     {
         {BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO, BRD_CLARO},
         {BRD_CLARO, BRD,       BRD,       BRD,       BRD,       BRD,       BRD,       BRD_OSCURO},
@@ -171,7 +168,6 @@ void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t c
                 uint16_t x_pixel = X + c * config.ESCALA_FUENTE;
                 uint16_t y_pixel = Y + f * config.ESCALA_FUENTE;
 
-                // Dibujamos un bloque sólido del tamaño de config.ESCALA_FUENTE|
                 for(uint16_t sy = 0; sy < config.ESCALA_FUENTE; sy++) {
                     for(uint16_t sx = 0; sx < config.ESCALA_FUENTE; sx++) {
                         gbt_dibujar_pixel(x_pixel + sx, y_pixel + sy, color);
@@ -196,7 +192,6 @@ void DibujarBitMap8x16(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t
                 uint16_t x_pixel = X + c * config.ESCALA_FUENTE;
                 uint16_t y_pixel = Y + f * config.ESCALA_FUENTE;
 
-                // Dibujamos un bloque sólido del tamaño de config.ESCALA_FUENTE|
                 for(uint16_t sy = 0; sy < config.ESCALA_FUENTE; sy++) {
                     for(uint16_t sx = 0; sx < config.ESCALA_FUENTE; sx++) {
                         gbt_dibujar_pixel(x_pixel + sx, y_pixel + sy, color);
@@ -213,7 +208,6 @@ void DibujarLetra(char c, uint16_t X, uint16_t Y, uint8_t color)
 {
     if(c<'A' || c>'Z')
         return;
-    // 'A' representaria ese offset de 65 que tiene e ASCII
     uint8_t indice = c - 'A';
     DibujarBitMap8x8(fuente8x8[indice],X,Y,color);
 
@@ -321,11 +315,9 @@ void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char
 
     DibujarTablero(m,0,0);
     DibujarPieza(p);
-    //RECTANGULO DE ESTADISTICAS
     DibujarRectangulo(config.OFFSET_X + (config.COL_TABLERO+1) * config.TAM_CELDA ,config.OFFSET_Y,15,20,N,PLANO);
     DibujarPuntaje(puntaje, config.OFFSET_X + (config.COL_TABLERO + 4) * config.TAM_CELDA + CalcularAnchoTexto("PUNTAJE"), config.OFFSET_Y + config.TAM_CELDA/2, W);
     DibujarTextoCentradoConSombra("PUNTAJE",config.OFFSET_Y + config.TAM_CELDA/2,W,-config.OFFSET_X -5,T);
-    //RECTANGULO TITULO
     DibujarRectangulo(config.OFFSET_X,config.TAM_CELDA,26,2,N,PLANO);
     DibujarTextoConSombra("TETRIS KAMIKAZE",config.OFFSET_X,config.TAM_CELDA * 1.5, S,T);
     DibujarTextoConSombra(nombre,config.OFFSET_X*10,config.TAM_CELDA * 1.5,S,T);
@@ -385,7 +377,7 @@ void DibujarTextoCentradoConSombra(char* texto, uint16_t Y, uint8_t color, uint1
 void AplicarPaleta(int indicePaleta)
 {
     tGBT_ColorRGB paletas[3][PALETA_MAX_COLORES] = {
-        // PALETA 0 - ORIGINAL
+
         {
             {0x00, 0x00, 0x00}, // N
             {0x00, 0xFF, 0xFF}, // I
@@ -415,7 +407,6 @@ void AplicarPaleta(int indicePaleta)
             {0xFF, 0xFF, 0xFF}, // W
             {0x01, 0x01, 0x01}, // TR
         },
-        // PALETA 1 - GAMEBOY (verdes)
         {
             {0x0F, 0x38, 0x0F}, // N
             {0x30, 0x62, 0x30}, // I
@@ -445,7 +436,7 @@ void AplicarPaleta(int indicePaleta)
             {0x9B, 0xBC, 0x0F}, // W
             {0x01, 0x01, 0x01}, // TR
         },
-        // PALETA 2 - MONOCROMO (grises)
+
         {
             {0x00, 0x00, 0x00}, // N
             {0xDD, 0xDD, 0xDD}, // I

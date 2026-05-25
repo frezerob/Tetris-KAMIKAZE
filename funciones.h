@@ -9,7 +9,6 @@
 
 extern uint8_t (*FORMAS[11])[16];
 
-// Prototipos de funciones
 void semilla();
 uint8_t generarPiezaAleatoria();
 void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado, matrix* m);
