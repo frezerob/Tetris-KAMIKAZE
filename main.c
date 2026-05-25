@@ -45,6 +45,7 @@ int main(int argc, char* argv[])
         if(ret == MENU_PRINCIPAL){
             ret = MenuIniciar(config);
             if(ret == SALIR) break;
+            free(nombre);
             nombre = PantallaIngresoNombre();
             // si ret == 0 (JUGAR) vuelve a Jugar()
         }
@@ -137,8 +138,6 @@ int Jugar(char *nombre)
     uint8_t corriendo = 1;
     uint8_t fijada = 0;
     int gameOver = 0;
-    int lineas = 0;
-    int tabla[] = {0, 100, 300, 500, 800};
 
 
     // INICIALIZACIÓN DE TEMPORIZADORES (Siempre dividiendo por 1000.0 para pasar a segundos)
@@ -178,9 +177,7 @@ int Jugar(char *nombre)
             if(gbt_temporizador_consumir(tempoRetraso)){
                 config.ultimaPosX = p.posX;
                 PiezaVolcar(&m, &p);
-                lineas = EliminarFilasCompletas(&m);
-                if(lineas >= 1 && lineas <= 4)
-                    puntaje += tabla[lineas] * MultiplicadorPuntos(velActual)* MultiplicadorPuntos(velActual);
+                puntaje += EliminarFilasCompletasConPuntaje(&m) * MultiplicadorPuntos(velActual);
 
                 tipoPieza(&p, proximas[0], &m);
                 for(int i = 0; i < CANT_PROXIMAS - 1; i++)
@@ -252,14 +249,14 @@ int Jugar(char *nombre)
         } else {
             seMovio = 1;
             PiezaMoverAbajo(&p);
-            sigueApoyada = PiezaDetectarColision(&p, &m);  // faltaba esto
+            sigueApoyada = PiezaDetectarColision(&p, &m);
             PiezaMoverArriba(&p);
 
             if(sigueApoyada && estaEnSuperficie){
                 gbt_temporizador_destruir(tempoRetraso);
                 tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
             } else if(!sigueApoyada){
-                estaEnSuperficie = 0;  // faltaba esto
+                estaEnSuperficie = 0;
             }
         }
     }
@@ -279,7 +276,7 @@ int Jugar(char *nombre)
                 gbt_temporizador_destruir(tempoRetraso);
                 tempoRetraso = gbt_temporizador_crear((velActual / 2) / 1000.0);
             } else if(!sigueApoyada){
-                estaEnSuperficie = 0;  // faltaba esto
+                estaEnSuperficie = 0;
             }
         }
     }
@@ -300,7 +297,6 @@ int Jugar(char *nombre)
             proximas[CANT_PROXIMAS - 1] = generarPiezaAleatoria();
 
             if(PiezaDetectarColision(&p, &m)){
-                corriendo = 0;
                 gameOver = 1;
             }
 
@@ -319,13 +315,12 @@ int Jugar(char *nombre)
         RenderizarJuego(&p, &m, puntaje, proximas, nombre);
     }
 
+    // EVITAMOS MEMORY LEAK Y DESTRUIMOS TEMPORIZADORES
+    MatrizBorrar(&m);
     gbt_temporizador_destruir(temporizador);
     gbt_temporizador_destruir(tempoRetraso);
 
         if(gameOver){
-            for(uint8_t i = 0; i < m.fil; i++)
-                free(m.mat[i]);
-            free(m.mat);
             Score scores[MAX_SCORES];
             int cant = 0;
             ScoresCargar(scores, &cant);

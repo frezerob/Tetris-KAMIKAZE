@@ -154,7 +154,7 @@ void DibujarBitMap(const uint8_t bitmap[], uint16_t X, uint16_t Y, uint8_t color
     if(config.FUENTE == fuente_8x8)
         DibujarBitMap8x8(bitmap,X,Y,color);
     else
-        DibujarBitMap8x16(bitmap,X,Y,color);
+        DibujarBitMap16x8(bitmap,X,Y,color);
 }
 
 void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t color){
@@ -182,7 +182,7 @@ void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t c
     }
 }
 
-void DibujarBitMap8x16(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t color)
+void DibujarBitMap16x8(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t color)
 {
     uint8_t bits;
     for(int8_t f=0; f<TAM_FUENTE16x8; f++){
@@ -211,33 +211,36 @@ void DibujarBitMap8x16(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t
 //
 void DibujarLetra(char c, uint16_t X, uint16_t Y, uint8_t color)
 {
-    if(c<'A' || c>'Z')
-        return;
-    // 'A' representaria ese offset de 65 que tiene e ASCII
+    if(c < 'A' || c > 'Z') return;
     uint8_t indice = c - 'A';
-    DibujarBitMap8x8(fuente8x8[indice],X,Y,color);
 
+    if(config.FUENTE == fuente_8x8) {
+        DibujarBitMap(fuente8x8[indice], X, Y, color);
+    } else {
+        DibujarBitMap(fuente16x8[indice], X, Y, color);
+    }
 }
 
-void DibujarNumero(char num,uint16_t X, uint16_t Y, uint8_t color){
-    if (num<'0' || num>'9')
-        return;
-
+void DibujarNumero(char num, uint16_t X, uint16_t Y, uint8_t color)
+{
+    if (num < '0' || num > '9') return;
     uint8_t indice = num - '0';
 
-    DibujarBitMap8x8(fuente8x8_num[indice],X,Y,color);
-
+    if(config.FUENTE == fuente_8x8) {
+        DibujarBitMap(fuente8x8_num[indice], X, Y, color);
+    } else {
+        DibujarBitMap(fuente16x8_num[indice], X, Y, color);
+    }
 }
 
-
-void DibujarCaracter(char c, uint16_t X, uint16_t Y,uint8_t color)
+void DibujarCaracter(char c, uint16_t X, uint16_t Y, uint8_t color)
 {
-    if(c >= 'A' && c<='Z')
-        DibujarLetra(c,X,Y,color);
-    else if(c>='0' && c<='9')
-        DibujarNumero(c,X,Y,color);
+    if(c >= 'A' && c <= 'Z')
+        DibujarLetra(c, X, Y, color);
+    else if(c >= '0' && c <= '9')
+        DibujarNumero(c, X, Y, color);
+    return;
 }
-
 
 void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color)
 {

@@ -8,6 +8,7 @@
 #include <time.h>
 #include "GBT/gbt.h"
 #include "fuente8x8.h"
+#include "fuente16x8.h"
 #include <string.h>
 
 typedef struct {
@@ -65,7 +66,7 @@ typedef enum {
 
 typedef enum {
     fuente_8x8,
-    fuente_8x16
+    fuente_16x8
 } eFuentes;
 
 typedef enum {
