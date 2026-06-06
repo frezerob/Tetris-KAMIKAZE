@@ -41,14 +41,27 @@ static int LoopJuego(matrix* m, PiezaActiva* p, int proximas[],int velActual, in
                 break;
             if(opcion == GUARDAR_Y_SALIR){
                 EstadoPartida estado;
-                estado.fil = m->fil;
-                estado.col = m->col;
+                for(int i = 0; i < MAX_FIL; i++) {
+                    for(int j = 0; j < MAX_COL; j++) {
+                        estado.mat[i][j] = 0;
+                    }
+                }
+
+                //Guardamos estado de juego
+                estado.fil = config.FIL_TABLERO;
+                estado.col = config.COL_TABLERO;
+                estado.MODO = config.MODO;
                 for(int i = 0; i < m->fil; i++)
                     for(int j = 0; j < m->col; j++)
                         estado.mat[i][j] = m->mat[i][j];
+
+                //Se guarda el estado de la pieza
                 estado.posX     = p->posX;
                 estado.posY     = p->posY;
                 estado.rotacion = p->rotacion;
+
+
+
                 for(int i = 0; i < 11; i++){
                     if(FORMAS[i] == p->forma){
                         estado.tipoPiezaActual = i;
@@ -275,14 +288,23 @@ int JugarDesdeEstado(EstadoPartida* e)
     if(MatrizIniciar(&m, e->fil, e->col) == INIT_ERR)
         return INIT_ERR;
 
-    for(int i = 0; i < e->fil; i++)
-        for(int j = 0; j < e->col; j++)
+    for(int i = 0; i < e->fil; i++) {
+        for(int j = 0; j < e->col; j++) {
             m.mat[i][j] = e->mat[i][j];
+        }
+    }
 
+    //Se configura la pieza
     p.forma    = FORMAS[e->tipoPiezaActual];
     p.posX     = e->posX;
     p.posY     = e->posY;
     p.rotacion = e->rotacion;
+
+    //Se configura la partida
+    config.MODO = e->MODO;
+    config.FIL_TABLERO = e->fil;
+    config.COL_TABLERO = e->col;
+
 
     int proximas[CANT_PROXIMAS];
     for(int i = 0; i < CANT_PROXIMAS; i++)

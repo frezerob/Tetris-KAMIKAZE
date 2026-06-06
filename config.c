@@ -5,6 +5,11 @@
 
 TDAconfig config;
 
+/*
+* Evalúa los valores actuales de ancho y alto guardados en la estructura
+* global 'config' y aplica la configuración correspondiente si coinciden
+* con las resoluciones soportadas (320x200 o 640x480).
+*/
 void ConfigAplicarResolucion()
 {
     if(config.ANCHO == 320 && config.ALTO == 200)
@@ -14,9 +19,22 @@ void ConfigAplicarResolucion()
     }
 }
 
+/*
+* Inicializa la configuración del sistema. Si se pasan suficientes argumentos
+* por línea de comandos (argc >= 4), prioriza estos valores (ancho, alto y escala)
+* y los guarda. De lo contrario, intenta leer la configuración desde un archivo
+* de texto plano parseando pares clave-valor. Si el archivo no existe, aplica
+* una configuración por defecto (320) y la guarda.
+*
+* archivo: Ruta del archivo de configuración a leer.
+* argc: Cantidad de argumentos pasados por consola.
+* argv: Vector de cadenas de texto con los argumentos de la consola.
+*
+* Retorna: 1 si se cargó exitosamente por línea de comandos, 0 si se cargó
+* desde el archivo o si se usó la configuración por defecto.
+*/
 int ConfigCargar(char* archivo, int argc, char* argv[])
 {
-
     if (argc >= 4) {
         config.ANCHO = atoi(argv[1]);
         config.ALTO = atoi(argv[2]);
@@ -51,18 +69,26 @@ int ConfigCargar(char* archivo, int argc, char* argv[])
         else if(strcmp(clave, "PALETA") == 0){
             config.PALETA = atoi(valor);
         }
-
         else if(strcmp(clave, "COL_TABLERO") == 0)
-        config.COL_TABLERO = atoi(valor);
+            config.COL_TABLERO = atoi(valor);
     }
 
     fclose(f);
     AplicarConfig(config.ANCHO);
 
-
     return 0;
 }
 
+/*
+* Exporta el estado actual de la estructura global 'config' y lo escribe
+* en un archivo de texto con un formato legible (Clave Valor) para que
+* pueda ser recuperado en futuras ejecuciones.
+*
+* archivo: Ruta del archivo donde se guardarán los datos.
+*
+* Retorna: 0 si el archivo se guardó correctamente, -1 si hubo un error
+* al intentar abrir o crear el archivo.
+*/
 int ConfigGuardar(char* archivo)
 {
     FILE* f = fopen(archivo, "w");
@@ -79,6 +105,15 @@ int ConfigGuardar(char* archivo)
     return 0;
 }
 
+/*
+* Ajusta los parámetros internos del entorno gráfico y del tablero (escalas,
+* tamaños de celda y fuentes) basándose en el ancho de resolución recibido.
+* Si se solicita 640, define valores para alta resolución; para cualquier
+* otro valor, define el estándar de baja resolución (320x200). También asegura
+* valores por defecto para las dimensiones del tablero.
+*
+* res: El ancho de la resolución deseada (por ejemplo, 320 o 640).
+*/
 void AplicarConfig(uint16_t res){
     if(res == 640){
         config.ANCHO = 640;

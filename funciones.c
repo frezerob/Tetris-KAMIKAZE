@@ -3,13 +3,22 @@
 #include "config.h"
 uint8_t PiezaAnterior;
 
-
-
+/**
+ * Inicializa la semilla del generador de números pseudoaleatorios utilizando
+ * el tiempo actual del sistema para asegurar secuencias diferentes en cada ejecución.
+ */
 void semilla()
 {
     srand(time(NULL));
 }
 
+/**
+ * Genera un índice de pieza aleatorio asegurando que no se repita de forma
+ * consecutiva con la pieza anterior. Adapta el pool de piezas disponibles (11 o 7)
+ * según si el juego se encuentra en modo DELUXE o estándar.
+ *
+ * Retorna: El identificador numérico de la nueva pieza generada.
+ */
 uint8_t generarPiezaAleatoria() {
     uint8_t Aux;
 
@@ -22,8 +31,6 @@ uint8_t generarPiezaAleatoria() {
     PiezaAnterior = Aux;
     return PiezaAnterior;
 }
-
-
 
 uint8_t PIEZA_I[4][16] = {
     {TR,TR,TR,TR, I,I,I,I, TR,TR,TR,TR, TR,TR,TR,TR},
@@ -106,9 +113,16 @@ uint8_t (*FORMAS[11])[16] = {
     PIEZA_I, PIEZA_J, PIEZA_L, PIEZA_O, PIEZA_S, PIEZA_T, PIEZA_Z, PIEZA_X, PIEZA_C, PIEZA_P, PIEZA_H
 };
 
-
-
-
+/**
+ * Configura los atributos iniciales de una estructura PiezaActiva (forma, rotación,
+ * posición vertical). Calcula su coordenada horizontal inicial en base al historial;
+ * si opera en modo DELUXE aplica comportamiento toroidal (bucle en los bordes), de lo
+ * contrario valida los límites físicos del tablero para evitar desbordamientos laterales.
+ *
+ * pieza: Puntero a la estructura de la pieza actual que se va a inicializar.
+ * tipoSeleccionado: Índice numérico de la pieza dentro del arreglo global 'FORMAS'.
+ * m: Puntero a la estructura de la matriz de juego.
+ */
 void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado, matrix* m) {
     pieza->forma = FORMAS[tipoSeleccionado];
     pieza->rotacion = 0;
@@ -140,32 +154,71 @@ void tipoPieza(PiezaActiva* pieza, uint8_t tipoSeleccionado, matrix* m) {
     }
 }
 
+/**
+ * Decrementa la posición vertical de la pieza en una unidad, simulando un
+ * desplazamiento hacia la parte superior de la pantalla.
+ *
+ * p: Puntero a la estructura de la pieza activa.
+ */
 void PiezaMoverArriba(PiezaActiva* p)
 {
     p->posY--;
 }
 
+/**
+ * Incrementa la posición vertical de la pieza en una unidad, simulando un
+ * desplazamiento descendente en el tablero.
+ *
+ * p: Puntero a la estructura de la pieza activa.
+ */
 void PiezaMoverAbajo(PiezaActiva* p)
 {
     p->posY++;
 }
 
+/**
+ * Decrementa la posición horizontal de la pieza en una unidad, desplazándola
+ * hacia la izquierda del tablero.
+ *
+ * p: Puntero a la estructura de la pieza activa.
+ */
 void PiezaMoverIzq(PiezaActiva* p)
 {
     p->posX--;
 }
+
+/**
+ * Incrementa la posición horizontal de la pieza en una unidad, desplazándola
+ * hacia la derecha del tablero.
+ *
+ * p: Puntero a la estructura de la pieza activa.
+ */
 void PiezaMoverDer(PiezaActiva* p)
 {
     p->posX++;
 }
 
+/**
+ * Cambia el estado de rotación de la pieza activa avanzando un paso en sentido
+ * horario dentro de sus 4 fases posibles (0 a 3).
+ *
+ * p: Puntero a la estructura de la pieza activa.
+ */
 void PiezaRotarDerecha(PiezaActiva* p)
 {
     p->rotacion = (p->rotacion + 1) % 4;
 }
 
-
-
+/**
+ * Verifica si la pieza colisiona con los bordes del escenario, con el fondo (piso)
+ * o con bloques estáticos ya consolidados en la matriz de juego. Contempla el
+ * comportamiento envolvente (toroidal) de los límites horizontales en el modo DELUXE.
+ *
+ * p: Puntero a la estructura de la pieza activa en su estado/posición a evaluar.
+ * m: Puntero a la matriz donde se registran los bloques fijados del juego.
+ *
+ * Retorna: 1 si se detecta alguna colisión, 0 si la posición es completamente válida.
+ */
 int8_t PiezaDetectarColision(PiezaActiva* p, matrix* m)
 {
     for(uint8_t i = 0; i < ORDEN; i++){
@@ -191,11 +244,27 @@ int8_t PiezaDetectarColision(PiezaActiva* p, matrix* m)
     return 0;
 }
 
+/**
+ * Cambia el estado de rotación de la pieza activa retrocediendo un paso en sentido
+ * antihorario dentro de sus 4 fases posibles (0 a 3).
+ *
+ * p: Puntero a la estructura de la pieza activa.
+ */
 void PiezaRotarIzquierda(PiezaActiva* p)
 {
     p->rotacion = (p->rotacion + 3) % 4;
 }
 
+/**
+ * Reduce de manera porcentual el tiempo de refresco/caída del bucle (haciéndolo
+ * más rápido) en función de la cantidad de piezas colocadas, subdividiendo
+ * la progresión cada 10 bloques (niveles implícitos).
+ *
+ * velInicial: Velocidad o retardo base expresado en milisegundos.
+ * piezas: Contador total de piezas colocadas hasta el momento.
+ *
+ * Retorna: El nuevo valor numérico de delay dinámico calculado.
+ */
 int RecalcularVelocidad(int velInicial, int piezas)
 {
     int niveles = piezas / 10;
@@ -205,6 +274,14 @@ int RecalcularVelocidad(int velInicial, int piezas)
     return vel;
 }
 
+/**
+ * Devuelve el tiempo de retardo por defecto (en milisegundos) asociado a los
+ * tres modos de juego predefinidos del sistema.
+ *
+ * dificultad: Nivel de dificultad (0 para FÁCIL, 1 para NORMAL, 2 para DIFÍCIL).
+ *
+ * Retorna: Tiempo de espera en milisegundos (1000, 500 o 200 respectivamente).
+ */
 uint16_t VelocidadSegunDificultad(int dificultad)
 {
     switch(dificultad){
@@ -215,11 +292,24 @@ uint16_t VelocidadSegunDificultad(int dificultad)
     }
 }
 
+/**
+ * Calcula el coeficiente multiplicador aplicable a la puntuación basándose en
+ * la tasa de frames/velocidad de caída actual. Cuanto menor sea el delay (más rápido),
+ * mayor será el puntaje otorgado.
+ */
 int MultiplicadorPuntos(int velActual)
 {
     return 1000 / velActual;
 }
 
+/**
+ * Compara los caracteres de una cadena de texto dada con el string literal "GOD"
+ * bajo un límite definido por la constante MAX_NOMBRE para verificar coincidencia exacta.
+ *
+ * nombre: Puntero a la cadena de caracteres que se desea comprobar.
+ *
+ * Retorna: 1 si el nombre coincide exactamente con "GOD", 0 en caso contrario.
+ */
 uint8_t NombreEsGod(char *nombre)
 {
     char *GOD = "GOD";

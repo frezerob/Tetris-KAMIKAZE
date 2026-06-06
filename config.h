@@ -27,8 +27,8 @@ extern TDAconfig config;
 int ConfigCargar(char* archivo,int argc, char* argv[]);
 int ConfigGuardar(char* archivo);
 void ConfigAplicarResolucion();
-
 void AplicarConfig(uint16_t res);
+
 
 
 #endif // CONFIG_H_INCLUDED
