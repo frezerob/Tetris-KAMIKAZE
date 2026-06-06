@@ -10,6 +10,11 @@
 #include "score.h"
 #include "partida.h"
 
+/**
+ *
+ * Loop de juego. Contiene las mecánicas especificas para correr y renderizar el juego.
+ *
+ */
 static int LoopJuego(matrix* m, PiezaActiva* p, int proximas[],int velActual, int piezasCaidas, int puntaje, char* nombre)
 {
     int cheat = (strcmp(nombre, "GOD") == 0) ? 2 : 1;
@@ -251,7 +256,9 @@ static int LoopJuego(matrix* m, PiezaActiva* p, int proximas[],int velActual, in
 
     return SALIR;
 }
-
+/**
+ * Esta funcion se activa al inicar una nueva partida desde 0
+ */
 int Jugar(char* nombre)
 {
     matrix m;
@@ -280,6 +287,9 @@ int Jugar(char* nombre)
     return LoopJuego(&m, &p, proximas, velActual, 0, 0, nombre);
 }
 
+/**
+ * Carga la partida desde un estado guardado. Esta función es usada para las mecánica de carga y guardado de partidas.
+ */
 int JugarDesdeEstado(EstadoPartida* e)
 {
     matrix m;

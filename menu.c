@@ -6,7 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
-
+/**
+ * Calcula la opcion en base a un input,
+ */
 void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opciones)
 {
     *tecla = gbt_obtener_tecla_presionada();
@@ -16,6 +18,17 @@ void CalcularOpcion(eGBT_Tecla *tecla, uint8_t *opcion, uint8_t cantidad_opcione
         *opcion = (*opcion + 1) % cantidad_opciones;
 }
 
+
+/**
+ * Muestra el menú incial y funciona como punto de partida a los distintos menú que hay.
+ * Adicionalmente devuelve el valor  en base a la opción elegida.
+ * Si la opción es:
+ * -JUGAR retorna 0 SIEMPRE
+ * -CONTINUAR retorna 1 SIEMPRE(siempre y cuando este disponible como opción)
+ * -ESTADISTICAS va a ir a la función MenuEstadisticas y volvera a MenuIniciar. Valor de retorno 2 o 1 (depende de si está disponible continuar)
+ * -CONFIGURACION va a ir a la función MenuConfiguracion() y volvera a MenuIniciar(). Valor de retorno 3 o 2 (depende de si está disponible continuar)
+ * -SALIR 4 o 3 (depende de si está disponible continuar)
+ */
 int MenuIniciar(TDAconfig cfg)
 {
     int hayPartida = PartidaExiste();
@@ -45,6 +58,9 @@ int MenuIniciar(TDAconfig cfg)
     }
 }
 
+/**
+ * Despliega menú de configuración para: Dificultad, resolución, modo de juego, cantidad de columnas, paleta
+ */
 void MenuConfiguracion()
 {
     uint8_t cant = 6;
@@ -111,7 +127,10 @@ void MenuConfiguracion()
     }
 }
 
-
+/**
+ * Despliega menú al perder, toma el puntaje como argumento para poder mostrarlo.
+ * Adicionalmente despliega un menú de opciones para: Reiniciar y para ir al menú principal
+ */
 int MenuGameOver(int puntaje)
 {
     char* opciones[] = {"REINICIAR", "MENU PRINCIPAL"};
@@ -151,6 +170,12 @@ int MenuGameOver(int puntaje)
     }
 }
 
+/**
+ * Despliega un menú de pausa con opciones para:
+ * - Reanudar
+ * - Guardar Y salir
+ * - Salir sin guardar
+ */
 int8_t MenuPausa()
 {
     eGBT_Tecla tecla;
@@ -174,6 +199,10 @@ int8_t MenuPausa()
     }
 }
 
+/**
+ * Despliega en pantalla un mensaje para el ingreso de nombre y toma el input para el nombre (máximo 3 caracteres)
+ * Devuelve un arreglo de caracteres con el nombre.
+ */
 char* PantallaIngresoNombre()
 {
     char *nombre = calloc(4, sizeof(char));
@@ -213,6 +242,10 @@ char* PantallaIngresoNombre()
 
 }
 
+/**
+ * Despliega las estadísticas historicas en pantalla
+ *
+ */
 void MenuEstadisticas()
 {
     Score scores[MAX_SCORES];

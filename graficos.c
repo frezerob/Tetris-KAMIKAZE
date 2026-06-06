@@ -5,6 +5,12 @@
 #include "funciones.h"
 #include "core.h"
 #include "config.h"
+
+/**
+ * Imprime en pantalla el tablero de juego.
+ * Aplica un offset inicial a la posición del tablero
+ * Distingue celdas vacías de celdas con bloques para una textura u otra
+ */
 void DibujarTablero(matrix* m, uint16_t X, uint16_t Y){
 
     uint16_t PosX = X + config.OFFSET_X;
@@ -18,7 +24,13 @@ void DibujarTablero(matrix* m, uint16_t X, uint16_t Y){
         }
     }
 }
-
+/**
+ * Dibuja la pieza en el tablero
+ * Toma como argumento la pieza actual
+ * Si la el elemento de la pieza es TR (transparente) o si su posición en Y es menor a 0 no se dibuja
+ * Si el modo de juego es "CLASICO" la pieza no podrá dibujarse fuera de los bordes establecidos del tablero
+ * Si el modo de juego es "DELUXE" la pieza podrá salirse de los bordes laterales para ser dibujado como si el tablero fuera redondo
+ */
 void DibujarPieza(PiezaActiva* p)
 {
     for(uint8_t i = 0; i < ORDEN; i++){
@@ -59,7 +71,12 @@ void DibujarPieza(PiezaActiva* p)
         }
     }
 }
-
+/**
+ *
+ * Matriz de 3 dimensiones usada para manejar las distintas texturas aplicadas en el juego
+ * Las texturas disponibles son: BLOQUE, PLANO, BORDE, FONDO
+ *
+ */
 const uint8_t texturas[CANT_TEXTURAS][8][8] =
 {
     //BLOQUE
@@ -103,6 +120,10 @@ const uint8_t texturas[CANT_TEXTURAS][8][8] =
     }
 };
 
+/**
+ * Dibujar el fondo del juego
+ * ANCHO_CELDAS Y ALTO_CELDAS son la cantidad respectiva de celdas que hay disponibles (puede variar en base a la resolución)
+ */
 void DibujarFondo()
 {
     const uint16_t ANCHO_CELDAS = config.ANCHO / config.TAM_CELDA;
@@ -115,7 +136,12 @@ void DibujarFondo()
         }
     }
 }
-
+/**
+ *
+ * Dibujar celda toma una coordenada (X,Y), un color, un tamaño de celda y una textura para dibujar la celda en pantalla
+ * Para saber que debe dibujar matea el pixel a la textura
+ *
+ */
 void DibujarCelda(uint16_t X, uint16_t Y, uint8_t color, uint8_t TAMANIO, eTexturas textura)
 {
     uint16_t LIM_Y = Y + TAMANIO, LIM_X = X + TAMANIO;
@@ -146,7 +172,10 @@ void DibujarCelda(uint16_t X, uint16_t Y, uint8_t color, uint8_t TAMANIO, eTextu
         }
 }
 
-
+/**
+ * Función empleada para saber a que función dibujar el dibujo del bitmap.
+ * Usa la fuente puesta en la cofiguración para saberlo
+ */
 void DibujarBitMap(const uint8_t bitmap[], uint16_t X, uint16_t Y, uint8_t color){
     if(config.FUENTE == fuente_8x8)
         DibujarBitMap8x8(bitmap,X,Y,color);
@@ -154,6 +183,11 @@ void DibujarBitMap(const uint8_t bitmap[], uint16_t X, uint16_t Y, uint8_t color
         DibujarBitMap16x8(bitmap,X,Y,color);
 }
 
+/**
+ * Dibujar el bitmap de 8 filas.
+ * Realiza una comparacion "AND" entre el byte y un 1 desplazado 7-C digitos. Si devuelve cualquier cosa distinta de 0 dibuja
+ * Se escala con la escala en configuración.
+**/
 void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t color){
 
     uint8_t bits;
@@ -177,7 +211,11 @@ void DibujarBitMap8x8(const uint8_t bitmap[8], uint16_t X, uint16_t Y, uint8_t c
         }
     }
 }
-
+/**
+ * Dibujar el bitmap de 16 filas.
+ * Realiza una comparacion "AND" entre el byte y un 1 desplazado 7-C digitos. Si devuelve cualquier cosa distinta de 0 dibuja
+ * La fuente se escala con config.ESCALA_FUENTE
+**/
 void DibujarBitMap16x8(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t color)
 {
     uint8_t bits;
@@ -203,7 +241,11 @@ void DibujarBitMap16x8(const uint8_t bitmap[16], uint16_t X, uint16_t Y, uint8_t
 }
 
 
-//
+/**
+ *
+ * Toma como argumento un caracter, se fija si es válido y lo deriva a la función DibujarBitMap para imprimirlo en pantalla
+ *
+ */
 void DibujarLetra(char c, uint16_t X, uint16_t Y, uint8_t color)
 {
     if(c < 'A' || c > 'Z') return;
@@ -215,7 +257,11 @@ void DibujarLetra(char c, uint16_t X, uint16_t Y, uint8_t color)
         DibujarBitMap(fuente16x8[indice], X, Y, color);
     }
 }
-
+/**
+ *
+ * Toma como argumento un caracter, se fija si es válido y lo deriva a la función DibujarBitMap para imprimirlo en pantalla
+ *
+ */
 void DibujarNumero(char num, uint16_t X, uint16_t Y, uint8_t color)
 {
     if (num < '0' || num > '9') return;
@@ -227,7 +273,11 @@ void DibujarNumero(char num, uint16_t X, uint16_t Y, uint8_t color)
         DibujarBitMap(fuente16x8_num[indice], X, Y, color);
     }
 }
-
+/**
+ *
+ * Toma como argumento un caracter, se fija si es válido y lo deriva a la función correcta
+ *
+ */
 void DibujarCaracter(char c, uint16_t X, uint16_t Y, uint8_t color)
 {
     if(c >= 'A' && c <= 'Z')
@@ -237,6 +287,11 @@ void DibujarCaracter(char c, uint16_t X, uint16_t Y, uint8_t color)
     return;
 }
 
+/**
+ *
+ * Toma como argumento una cadena de texto y una posición (x,y) para dibujarlo con el color (también argumento)
+ *
+ */
 void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color)
 {
     while(*texto)
@@ -251,13 +306,21 @@ void DibujarTexto(char* texto, uint16_t X, uint16_t Y, uint8_t color)
     }
 }
 
-
+/**
+ * Toma como argumentos: Cadena de texto a imprimir, posición en eje Y, color y offset horizontal
+ * Calcula la posición en X para que quede centrado con una formula
+ */
 void DibujarTextoCentrado(char* texto, uint16_t Y, uint8_t color, uint16_t OFFSET_X)
 {
     uint16_t X = (config.ANCHO - CalcularAnchoTexto(texto))/2 + OFFSET_X;
     DibujarTexto(texto,X,Y,color);
 }
 
+/**
+ * Toma como argumentos: Opción actual, arreglo de punteros a cadenas de texto y la cantidad de opciones
+ * Imprime de manera centrada las distintas opciones del menú
+ * Adicionalmente destaca la opción actual
+ */
 void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones)
 {
     gbt_borrar_backbuffer(N);
@@ -273,7 +336,10 @@ void ImprimirMenu(uint8_t opcion, char* opciones_menu[], size_t cant_opciones)
     gbt_volcar_backbuffer();
 
 }
-
+/**
+ * Toma como argumentos: El puntaje, posición(X,Y) y un color
+ * Dibujar el puntaje tomando la posición X;Y como base para empezar a escribir el número
+ */
 void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color)
 {
     char Spuntaje[17];
@@ -281,7 +347,10 @@ void DibujarPuntaje(int puntaje, uint16_t X, uint16_t Y, uint8_t color)
     DibujarTextoConSombra(Spuntaje,X,Y,color,T);
 
 }
-
+/**
+ * Toma como argumentos una de las piezas futuras y un par X,Y
+ * Dibujar la próxima pieza en el X;Y dados.
+ */
 void DibujarProximaPieza(uint8_t (*forma)[16], uint16_t X, uint16_t Y)
 {
     for(uint8_t i = 0; i < ORDEN; i++){
@@ -295,6 +364,10 @@ void DibujarProximaPieza(uint8_t (*forma)[16], uint16_t X, uint16_t Y)
     }
 }
 
+/**
+ * Toma como argumentos un par X;Y, ancho en celdas, alto en celdas, color y la textura
+ * Dibuja el rectangulo alineado con las celdas en la posición X,Y
+ */
 void DibujarRectangulo(uint16_t X, uint16_t Y, uint16_t ancho_celdas, uint16_t alto_celdas, uint8_t color, eTexturas textura)
 {
 
@@ -311,7 +384,10 @@ void DibujarRectangulo(uint16_t X, uint16_t Y, uint16_t ancho_celdas, uint16_t a
     }
 }
 
-
+/**
+ * Toma como argumentos la pieza actual, la matriz de juego, el puntaje, las piezas próximas y el nombre del juegador
+ * Renderiza el juego tomando los argumentos (fondo, piezas, estadísticas)
+ */
 void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char* nombre)
 {
     gbt_borrar_backbuffer(N);
@@ -336,7 +412,10 @@ void RenderizarJuego(PiezaActiva *p, matrix *m, int puntaje, int proximas[],char
     gbt_volcar_backbuffer();
 }
 
-
+/**
+ * Toma como argumentos un texto, el centro X,Y, el color del texto, el color del fondo y la textura
+ * Dibuja el texto en un recuadro
+ */
 void DibujarTextoEnRecuadro(char* texto, uint16_t centroX, uint16_t centroY, uint8_t colorTexto, uint8_t colorFondo, eTexturas texturaBorde)
 {
     uint16_t anchoTexto = CalcularAnchoTexto(texto);
@@ -363,6 +442,10 @@ void DibujarTextoEnRecuadro(char* texto, uint16_t centroX, uint16_t centroY, uin
     DibujarTexto(texto, textoX, textoY, colorTexto);
 }
 
+/**
+ * Toma como argumentos el texto, un X,Y, un color y el color de la sombra
+ * Diuja el texto con un sombreado detras para mejor legibilidad del mismo
+ */
 void DibujarTextoConSombra(char* texto, uint16_t X, uint16_t Y, uint8_t color, uint8_t colorSombra)
 {
     uint16_t offsetSombra = config.ESCALA_FUENTE;
@@ -371,13 +454,20 @@ void DibujarTextoConSombra(char* texto, uint16_t X, uint16_t Y, uint8_t color, u
 
     DibujarTexto(texto, X, Y, color);
 }
-
+/**
+ * Toma como argumentos el texto, un "Y", un color y el color de la sombra
+ * Diuja el texto centrado con un sombreado detras para mejor legibilidad del mismo
+ */
 void DibujarTextoCentradoConSombra(char* texto, uint16_t Y, uint8_t color, uint16_t OFFSET_X, uint8_t colorSombra)
 {
     uint16_t X = (config.ANCHO - CalcularAnchoTexto(texto))/2 + OFFSET_X;
     DibujarTextoConSombra(texto,X,Y,color, colorSombra);
 }
 
+/**
+ * Toma como argumento un indice de paleta
+ * Aplica una paleta en base a un indice
+ */
 void AplicarPaleta(int indicePaleta)
 {
     tGBT_ColorRGB paletas[3][PALETA_MAX_COLORES] = {
