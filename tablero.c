@@ -42,7 +42,9 @@ void MatrizVaciarFil(matrix *m, uint8_t row)
         m->mat[row][j]=0;
     }
 }
-
+/**
+ *
+ */
 void MatrizDespFil(matrix* m, uint8_t row)
 {
     uint8_t* aux = m->mat[row];
@@ -53,7 +55,10 @@ void MatrizDespFil(matrix* m, uint8_t row)
 
     m->mat[0] = aux;
 }
-
+/**
+ * Toma como argumento un puntero a matriz m y un puntero a la pieza actual
+ * Vuelca la pieza en la matriz para volverla estática
+ */
 void PiezaVolcar(matrix* m, PiezaActiva* p)
 {
     for(uint8_t i = 0; i < ORDEN; i++){
@@ -84,6 +89,10 @@ void PiezaVolcar(matrix* m, PiezaActiva* p)
     }
 }
 
+/**
+ * Toma como argumento un puntero a matriz
+ * Devuelva la cantidad de filas completas
+ */
 int8_t MatrizFilCompleta(matrix* m)
 {
     int8_t llena = 1;
@@ -100,6 +109,10 @@ int8_t MatrizFilCompleta(matrix* m)
     return -1;
 }
 
+/**
+ * Toma como argumento un puntero a matrix y una fila
+ * Elimina una fila completa (setea a Negro = 0)
+ */
 void MatrizEliminarFila(matrix* m, int row)
 {
     for(int j = 0; j < m->col; j++)
@@ -107,7 +120,9 @@ void MatrizEliminarFila(matrix* m, int row)
     MatrizDespFil(m,row);
 }
 
-
+/**
+ * Toma como argumento un puntero a matrix para eliminar las filas completas
+ */
 int EliminarFilasCompletas(matrix* m)
 {
     int filasEliminadas = 0;
@@ -119,7 +134,10 @@ int EliminarFilasCompletas(matrix* m)
     return filasEliminadas;
 }
 
-
+/**
+ * Toma como argumento un puntero a matrix para eliminar las filas completas
+ * Devuelve el puntaje 100 puntos por fila mas un bonus por completar mas de una
+ */
 int EliminarFilasCompletasConPuntaje(matrix* m)
 {
     uint8_t filasEliminadas = 0;
@@ -132,6 +150,9 @@ int EliminarFilasCompletasConPuntaje(matrix* m)
     return filasEliminadas > 0 ? filasEliminadas*100 + (filasEliminadas-1)*100 : 0;
 }
 
+/**
+ * Toma como argumento un puntero a matrix para liberar la memoria
+ */
 void MatrizBorrar(matrix *m)
 {
     for(uint8_t i = 0; i < m->fil; i++)
