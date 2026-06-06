@@ -20,7 +20,8 @@ typedef struct {
     int puntaje;
     int piezasCaidas;
     int velActual;
-    char nombre[4];
+    char nombre[MAX_NOMBRE + 1];
+    ModoJuego MODO;
 } EstadoPartida;
 
 int PartidaGuardar(EstadoPartida* estado);
